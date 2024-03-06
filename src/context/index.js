@@ -1,6 +1,6 @@
 import { dispatch } from 'd3-dispatch';
 import { scaleTime } from 'd3-scale';
-import { select, event } from 'd3-selection';
+import { select } from 'd3-selection';
 import apiStart from './apiStart';
 import apiStop from './apiStop';
 import apiOn from './apiOn';
@@ -76,7 +76,7 @@ const context = () => {
 
   const { focus } = _context;
 
-  select(window).on('keydown.context-' + ++_context._id, function () {
+  select(window).on('keydown.context-' + ++_context._id, function (event) {
     switch (!event.metaKey && event.keyCode) {
       case 37: // left
         if (focus == null) _context.focus = size - 1;
