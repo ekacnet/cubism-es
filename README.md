@@ -1,5 +1,5 @@
 # cubism-es
-cubism-es is an ES6 module of [cubism](https://github.com/square/cubism), based on D3V5.
+cubism-es is an ES6 module of [cubism](https://github.com/square/cubism), based on D3V6.
 
 > **IMPORTANT** Version 1.1.0 contains api breaks. Please see below for details
 
@@ -18,7 +18,7 @@ From version `1.1.2`, there's no need to declare d3 as globals in your project w
 2. Standalone Usage
 
 ```
-<script src="lib/d3.v5.min.js" charset="utf-8" type="application/javascript"></script>
+<script src="lib/d3.v6.min.js" charset="utf-8" type="application/javascript"></script>
 <script src="lib/cubism-es.standalone.js" charset="utf-8" type="application/javascript"></script>
 ```
 
