@@ -18,9 +18,9 @@ const apiRender = (context, state) => ({
     } = state;
 
     selection
-      .on('mousemove.horizon', function () {
+      .on('mousemove.horizon', function (event) {
         // todo: why directly importing mouse doesn't work here?
-        context.focus(Math.round(d3.mouse(this)[0]));
+        context.focus(Math.round(d3.pointer(event)[0]));
       })
       .on('mouseout.horizon', () => context.focus(null));
 

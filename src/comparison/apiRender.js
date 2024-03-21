@@ -23,9 +23,9 @@ const apiRender = (state) => ({
     } = state;
 
     selection
-      .on('mousemove.comparison', function () {
+      .on('mousemove.comparison', function (event) {
         // todo, why directly d3.mouse doesn't work?
-        context.focus(Math.round(d3.mouse(this)[0]));
+        context.focus(Math.round(d3.pointer(event)[0]));
       })
       .on('mouseout.comparison', () => context.focus(null));
 
