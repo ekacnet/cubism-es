@@ -1,12 +1,12 @@
-import babel from 'rollup-plugin-babel';
-import babelrc from 'babelrc-rollup';
-import resolve from 'rollup-plugin-node-resolve';
-import commonjs from 'rollup-plugin-commonjs';
+import { babel } from '@rollup/plugin-babel';
+import resolve  from '@rollup/plugin-node-resolve';
+import commonjs  from '@rollup/plugin-commonjs';
+import json from '@rollup/plugin-json';
+import fs from 'fs';
 import postcss from 'rollup-plugin-postcss'
 import localResolve from 'rollup-plugin-local-resolve';
 import livereload from 'rollup-plugin-livereload';
 import serve from 'rollup-plugin-serve';
-import json from 'rollup-plugin-json';
 
 export default {
     input: 'src/index.js',
@@ -17,7 +17,7 @@ export default {
         }),
         localResolve(),
         postcss({ extract: 'dist/cubism-es.css' }),
-        babel(babelrc()),
+        babel(),
         resolve({
             module: true,
             jsnext: true,
@@ -38,12 +38,15 @@ export default {
             verbose: false
         })
     ],
-    external: [],
+    external: ['d3'],
     output: [
         {
             file: 'dist/cubism-es.standalone.js',
             format: 'umd',
             name: 'cubism',
+            globals: {
+                d3: 'd3'
+            },
             sourcemap: true
         }
     ]
