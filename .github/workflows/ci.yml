@@ -1,0 +1,62 @@
+name: CI
+
+# Controls when the workflow will run
+on:
+  pull_request:
+      types: [opened, synchronize, edited, ready_for_review]
+
+jobs:
+  build:
+    name: Build Artifacts
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/checkout@v4
+      - name: Set env
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Unit tests
+        run: npm run test
+
+      - name: Build
+        run: npm run build
+
+      - name: Check for E2E
+        id: check-for-e2e
+        run: |
+          if [ -d "cypress" ]
+          then
+            echo "has-e2e=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Start E2E server
+        if: steps.check-for-e2e.outputs.has-e2e == 'true'
+        run: npm run dev &
+
+      - name: Run E2E tests
+        if: steps.check-for-e2e.outputs.has-e2e == 'true'
+        run: npm run e2e
+
+      - name: Archive E2E output
+        uses: actions/upload-artifact@v4
+        if: steps.check-for-e2e.outputs.has-e2e == 'true' && steps.run-e2e-tests.outcome != 'success'
+        with:
+          name: cypress-videos
+          path: cypress/videos
+          retention-days: 5
+
+      - name: Store the artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: js-package
+          path: dist/
+          retention-days: 5
