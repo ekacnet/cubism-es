@@ -1,5 +1,5 @@
 # cubism-es
-cubism-es is an ES6 module of [cubism](https://github.com/square/cubism), based on D3V6.
+cubism-es is an ES6 module of [cubism](https://github.com/square/cubism), based on d3v7.
 
 > **IMPORTANT** Version 1.1.0 contains api breaks. Please see below for details
 
@@ -18,7 +18,7 @@ From version `1.1.2`, there's no need to declare d3 as globals in your project w
 2. Standalone Usage
 
 ```
-<script src="lib/d3.v6.min.js" charset="utf-8" type="application/javascript"></script>
+<script src="lib/d3.v7.min.js" charset="utf-8" type="application/javascript"></script>
 <script src="lib/cubism-es.standalone.js" charset="utf-8" type="application/javascript"></script>
 ```
 
@@ -41,11 +41,12 @@ function | cubism | cubism-es
 ## Demo
 the following samples work, you can try them by downloading this project and running `npm install` and `npm run dev`:
 
+* Matthieu's adaptation for ES6 & d3v7 of Mike's [random demo](https://ekacnet.github.io/cubism-es/random.html)
+* Matthieu's adaptation for ES6 & d3v7 of Mike's [stock demo](https://ekacnet.github.io/cubism-es/stock.html)
 * Mike, Bostock's [stock demo](https://bost.ocks.org/mike/cubism/intro/demo-stocks.html)
 * Patrick, Thompson's [Discrete Cubism](http://bl.ocks.org/patrickthompson/4d508eb3b8feac90762e)
 * Square Inc's [demo](http://square.github.io/cubism/)
 * Mike, Bostock's [random demo](https://bost.ocks.org/mike/cubism/intro/demo-random.html)
-* Comparison
 
 ## Development
 1. Clone repository
@@ -66,7 +67,7 @@ For more information, please visit square/cubism's [home page](http://square.git
 Graphite, Cube and GangliaWeb have not been verified yet.
 
 ## Credits
-Contributors of the original [cubism](https://github.com/square/cubism).
+Contributors of the original [cubism](https://github.com/square/cubism), [Yun Xing](https://github.com/BigFatDog) for the ES6 port, [Matthieu](https://github.com/ekacnet) for the clean-up and the upgrade to d3v7.
 
 ## License
 
