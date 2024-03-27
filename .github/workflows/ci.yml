@@ -2,6 +2,10 @@ name: CI
 
 # Controls when the workflow will run
 on:
+  push:
+    branches:
+      - master
+      - main
   pull_request:
       types: [opened, synchronize, edited, ready_for_review]
 
@@ -27,6 +31,7 @@ jobs:
       - name: Unit tests
         run: npm run test
 
+
       - name: Build
         run: npm run build
 
@@ -45,6 +50,16 @@ jobs:
       - name: Run E2E tests
         if: steps.check-for-e2e.outputs.has-e2e == 'true'
         run: npm run e2e
+
+      - name: upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        if: steps.check-for-e2e.outputs.has-e2e == 'true'
+        with:
+          fail_ci_if_error: false
+          flags: "integration"
+          file: coverage/clover.xml
+          token: ${{ secrets.CODECOV_TOKEN }} # required
+          verbose: true # optional (default = false)
 
       - name: Archive E2E output
         uses: actions/upload-artifact@v4
