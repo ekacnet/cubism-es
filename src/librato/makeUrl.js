@@ -1,7 +1,6 @@
 import findLibratoResolution from './findLibratoResolution';
 
-const make_url = (sdate, edate, step, composite) => {
-  const url_prefix = 'https://metrics-api.librato.com/v1/metrics';
+const make_url = (host, sdate, edate, step, composite) => {
   const params =
     'compose=' +
     composite +
@@ -11,7 +10,7 @@ const make_url = (sdate, edate, step, composite) => {
     edate +
     '&resolution=' +
     findLibratoResolution(sdate, edate, step);
-  return url_prefix + '?' + params;
+  return host + '?' + params;
 };
 
 export default make_url;
