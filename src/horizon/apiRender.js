@@ -17,12 +17,43 @@ const apiRender = (context, state) => ({
       _format,
     } = state;
 
+    // we need to remember in the context hat the mouse is pressed
+    const zoom = context.zoom();
     selection
       .on('mousemove.horizon', function (event) {
-        // todo: why directly importing mouse doesn't work here?
         context.focus(Math.round(d3.pointer(event)[0]));
+        if (context.zoom().enabled()) {
+          context
+            .zoom()
+            .updateCurrentCorner(
+              d3.pointer(event, selection.node().parentNode)
+            );
+        }
       })
-      .on('mouseout.horizon', () => context.focus(null));
+      .on('mouseout.horizon', () => {
+        context.focus(null);
+      })
+      .on('mouseout.zoom', () => {
+        var v = d3.pointer(event)[0];
+        if (v < 0 || v >= _width) {
+          zoom.reset();
+          context.focus(null);
+        }
+      });
+
+    selection
+      .on('mousedown', (event) => {
+        if (context.zoom().enabled()) {
+          console.log('zoom called');
+          zoom.start(selection, d3.pointer(event, selection.node().parentNode));
+        }
+      })
+      .on('mouseup', (event) => {
+        if (context.zoom().enabled()) {
+          zoom.stop(selection, d3.pointer(event, selection.node().parentNode));
+          context.focus(Math.round(d3.pointer(event)[0]));
+        }
+      });
 
     selection.append('canvas').attr('width', _width).attr('height', _height);
 
@@ -103,7 +134,6 @@ const apiRender = (context, state) => ({
           let y0 = (j - m + 1) * _height;
           _scale.range([m * _height + y0, y0]);
           y0 = _scale(0);
-
           for (let i = i0, n = _width, y1; i < n; ++i) {
             y1 = metric_.valueAt(i);
             if (y1 <= 0) {

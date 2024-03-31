@@ -9,6 +9,7 @@ import apiClientDelay from './apiClientDelay';
 import apiServerDelay from './apiServerDelay';
 import apiSize from './apiSize';
 import apiStep from './apiStep';
+import apiZoom from './apiZoom';
 import update from './update';
 
 import apiMetric from '../metric';
@@ -29,13 +30,16 @@ const context = () => {
     _size: 1440, // ten seconds, in milliseconds
     _serverDelay: 5e3,
     _clientDelay: 5e3,
-    _event: dispatch('prepare', 'beforechange', 'change', 'focus'),
+    _event: dispatch('prepare', 'beforechange', 'change', 'focus', 'reset'),
     _start0: null,
     _stop0: null, // the start and stop for the previous change event
     _start1: null,
     _stop1: null, // the start and stop for the next prepare event
+    _start_before_zoom: null,
+    _stop_before_zoom: null,
     _timeout: null,
     _focus: null,
+    _zoom: null,
     _scale: scaleTime().range([0, 1440]),
   };
 
@@ -53,7 +57,8 @@ const context = () => {
     apiSize(state),
     apiStart(state),
     apiStop(state),
-    apiStep(state)
+    apiStep(state),
+    apiZoom(state)
   );
 
   state._timeout = setTimeout(_context.start, 10);

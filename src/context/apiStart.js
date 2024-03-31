@@ -12,6 +12,9 @@ const apiStart = (state) => ({
       _focus,
     } = state;
 
+    if (_timeout !== null && _timeout == -1) {
+      return state;
+    }
     if (_timeout) clearTimeout(_timeout);
     let delay = +_stop1 + _serverDelay - Date.now();
 
@@ -19,6 +22,10 @@ const apiStart = (state) => ({
     if (delay < _clientDelay) delay += _step;
 
     const prepare = () => {
+      const { _timeout } = state;
+      if (_timeout !== null && _timeout == -1) {
+        return state;
+      }
       state._stop1 = new Date(
         Math.floor((Date.now() - _serverDelay) / _step) * _step
       );

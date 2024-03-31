@@ -88,6 +88,24 @@ It seems that everybody (almost) is using vscode those days, I'm not (I'm using 
 ## Documentation
 For more information, please visit square/cubism's [home page](http://square.github.io/cubism/) and [wiki](https://github.com/square/cubism/wiki)
 
+Starting from `1.2.0` there is a new `zoom` api for `context`, as the name implies it allows to zoom on the horizon(s).
+In order to do so add something like this:
+
+```javascript
+    const z = d3.select("body").append("div")
+        .attr("class", "zoom");
+
+    context.zoom(function(start, end) {
+        console.log(`Doing a zoom from point ${start} to point ${end}`);
+        context.zoom().zoomTime(start, end);
+    }).render(z);
+```
+
+The core of the configuration is the function that you pass to `zoom()`, it takes 2 parameters: the start index and the end index of the zoom, it's not time based but pixel based.
+
+You can do pretty much anything you want in the zoom function like actually zooming or calling a different URL with a detailed analysis of the zoom time.
+There is a function in the `zoom` module that you can reuse for doing the actual zooming: `zoom().zoomTime()`, your source must be able to provide a fresh array of values to handle the zoom, see examples in the stock or random demo.
+
 
 ## Limitation
 Graphite, Cube and GangliaWeb have not been verified yet.

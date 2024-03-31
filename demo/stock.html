@@ -109,7 +109,7 @@
     var delay = Date.now()  - new Date(2012, 4, 2)
     var context = cubism.context()
         .serverDelay(delay)
-        .step(864e5)
+        .step(864e5) // 86400 000 aka 86400 seconds
         .size(1280)
         .stop();
 
@@ -131,6 +131,14 @@
 
 
     context.horizon().format(d3.format("+,.2p")).render(d3.selectAll('.horizon'))
+    const z = d3.select("body").append("div")
+        .attr("class", "zoom");
+
+    context.zoom(function(start, end) {
+        console.log(`Doing a zoom from point ${start} to point ${end}`);
+        context.zoom().zoomTime(start, end);
+    }).render(z);
+
 
     context.on("focus", function(i) {
         d3.selectAll(".value").style("right", i == null ? null : context.size() - i + "px");
@@ -141,13 +149,25 @@
         var format = d3.timeParse("%d-%b-%y");
         return context.metric(function(start, stop, step, callback) {
             d3.csv("data/stocks/" + name + ".csv").then(rows => {
+                // read all the rows date the date and the open value, filter only for lines where
+                // there is data
                 rows = rows.map(function(d) { return [format(d.Date), +d.Open]; }).filter(function(d) { return d[1]; }).reverse();
-                var date = rows[0][0], compare = rows[400][1], value = rows[0][1], values = [value];
+                var date = rows[0][0], compare = rows[400][1], value = 0, values = [];
                 rows.forEach(function(d) {
-                    while ((date = d3.timeDay.offset(date, 1)) < d[0]) values.push(value);
-                    values.push(value = (d[1] - compare) / compare);
+                    if (d[0] >= start  && d[0] <= stop) {
+                        if (date < start) {
+                            console.log(`Forcing ${date} to ${start} end = ${stop} d[0] = ${d[0]} ${step/1000}`);
+                            date = start
+                        }
+                        while ((date = d3.timeMillisecond.offset(date, step )) < d[0]) { values.push(value);}
+                        values.push(value = (d[1] - compare) / compare);
+                    } else {
+                       date = d[0]
+                    }
                 });
-                callback(null, values.slice(-context.size()));
+                const desired_length = (stop -start)/step;
+                while (values.length < desired_length) values.push(value);
+                callback(null, values);
             });
         }, name);
     }

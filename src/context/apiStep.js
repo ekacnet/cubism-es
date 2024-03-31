@@ -1,6 +1,6 @@
 import update from './update';
 
-// Set or ge2t the step interval in milliseconds.
+// Set or get the step interval in milliseconds.
 // Defaults to ten seconds.
 const apiStep = (state) => ({
   step: (_step = null) => {
