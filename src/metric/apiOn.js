@@ -11,13 +11,16 @@ const beforechange = (state) => (start1, stop1) => {
   state._stop = stop1;
 };
 
+// how much refetch if there is a lag
+const metric_overlap = 6;
+
 // Prefetch new data into a temporary array.
 const prepare = (state, request) => (start1, stop) => {
   const { _start, _step, _fetching, _event, _size } = state;
   var steps = Math.min(_size, Math.round((start1 - _start) / _step()));
   if (!steps || _fetching) return; // already fetched, or fetching!
   state._fetching = true;
-  state._steps = Math.min(_size, steps + 6);
+  steps = Math.min(_size, steps + metric_overlap);
   const start0 = new Date(stop - steps * _step());
   request(start0, stop, _step(), function (error, data) {
     state._fetching = false;
