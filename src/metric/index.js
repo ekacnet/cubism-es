@@ -19,7 +19,9 @@ const apiMetric = (context) => ({
       _id: '.metric-' + ++context._id,
       _start: -Infinity,
       _stop: null,
-      _step: context.step(),
+      _step: () => {
+        return context.step();
+      },
       _size: context.size(),
       _values: [],
       _event: dispatch('change'),

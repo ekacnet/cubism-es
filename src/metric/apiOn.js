@@ -2,9 +2,10 @@
 const beforechange = (state) => (start1, stop1) => {
   const { _step, _size } = state;
   if (!isFinite(state._start)) state._start = start1;
+
   state._values.splice(
     0,
-    Math.max(0, Math.min(_size, Math.round((start1 - state._start) / _step)))
+    Math.max(0, Math.min(_size, Math.round((start1 - state._start) / _step())))
   );
   state._start = start1;
   state._stop = stop1;
@@ -13,15 +14,15 @@ const beforechange = (state) => (start1, stop1) => {
 // Prefetch new data into a temporary array.
 const prepare = (state, request) => (start1, stop) => {
   const { _start, _step, _fetching, _event, _size } = state;
-  const steps = Math.min(_size, Math.round((start1 - _start) / _step));
+  var steps = Math.min(_size, Math.round((start1 - _start) / _step()));
   if (!steps || _fetching) return; // already fetched, or fetching!
   state._fetching = true;
   state._steps = Math.min(_size, steps + 6);
-  const start0 = new Date(stop - state._steps * _step);
-  request(start0, stop, _step, function (error, data) {
+  const start0 = new Date(stop - steps * _step());
+  request(start0, stop, _step(), function (error, data) {
     state._fetching = false;
     if (error) return console.warn(error);
-    const i = isFinite(_start) ? Math.round((start0 - _start) / _step) : 0;
+    const i = isFinite(_start) ? Math.round((start0 - _start) / _step()) : 0;
     for (let j = 0, m = data.length; j < m; ++j) state._values[j + i] = data[j];
     _event.call('change', _start, stop);
   });
