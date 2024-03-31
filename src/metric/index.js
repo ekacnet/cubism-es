@@ -3,7 +3,6 @@ import { dispatch } from 'd3-dispatch';
 import apiAlias from './apiAlias';
 import apiExtent from './apiExtent';
 import apiOn from './apiOn';
-import apiPrepare from './apiPrepare';
 import apiShift from './apiShift';
 import apiValueAt from './apiValueAt';
 import apiOperator from './apiOperator';
@@ -32,7 +31,6 @@ const apiMetric = (context) => ({
     const metric = Object.assign(
       metricState,
       apiOn(metricState, request),
-      apiPrepare(metricState, request),
       apiValueAt(metricState),
       apiAlias(metricState),
       apiShift(metricState, request),
