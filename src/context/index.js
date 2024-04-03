@@ -22,22 +22,6 @@ import apiLibrato from '../librato';
 import apiGraphite from './apiGraphite';
 import apiComparison from '../comparison';
 
-const config = {
-  id: 1,
-  step: 1e4, // ten seconds, in milliseconds
-  size: 1440, // ten seconds, in milliseconds
-  serverDelay: 5e3,
-  clientDelay: 5e3,
-  event: dispatch('prepare', 'beforechange', 'change', 'focus'),
-  start0: null,
-  stop0: null, // the start and stop for the previous change event
-  start1: null,
-  stop1: null, // the start and stop for the next prepare event
-  timeout: null,
-  focus: null,
-  scale: scaleTime().range([0, 1440]),
-};
-
 const context = () => {
   const state = {
     _id: 1,
