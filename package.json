@@ -17,7 +17,7 @@
     "test": "mocha",
     "test:cover": "nyc mocha",
     "prepublish": "npm test",
-    "pretty": "prettier --single-quote --trailing-comma es5 --write \"{src,__{tests,demo,dist}__}/**/*.js\""
+    "pretty": "prettier --write \"{src,__{tests,demo,dist}__}/**/*.js\""
   },
   "files": [
     "src",
