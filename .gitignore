@@ -5,3 +5,4 @@ dist
 demo/cubism-es.standalone.js
 demo/cubism-es.standalone.js.map
 cypress/screenshots
+.vscode/launch.json
