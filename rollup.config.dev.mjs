@@ -9,6 +9,12 @@ import livereload from 'rollup-plugin-livereload';
 import serve from 'rollup-plugin-serve';
 
 export default {
+  onwarn: function (message) {
+    if (message.code === 'CIRCULAR_DEPENDENCY') {
+      return;
+    }
+    console.warn(message);
+  },
   input: 'src/index.js',
   plugins: [
     json({
@@ -16,8 +22,8 @@ export default {
       preferConst: true,
     }),
     localResolve(),
-    postcss({ extract: 'dist/cubism-es.css' }),
-    babel(),
+    postcss({ extract: 'demo/cubism-es.css' }),
+    babel({ babelHelpers: 'bundled' }),
     resolve({
       module: true,
       jsnext: true,
@@ -34,7 +40,7 @@ export default {
       port: 3004,
     }),
     livereload({
-      watch: 'demo',
+      watch: ['demo', 'src'],
       verbose: false,
     }),
   ],

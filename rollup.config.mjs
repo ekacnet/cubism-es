@@ -24,7 +24,7 @@ export default {
       preferConst: true,
     }),
     localResolve(),
-    babel(),
+    babel({ babelHelpers: 'bundled' }),
     resolve({
       module: true,
       jsnext: true,
