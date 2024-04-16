@@ -94,6 +94,8 @@ const apiRender = (context, state) => ({
         let negative;
 
         // positive bands
+        // remember m is the number of colors / 2
+        // I guess divided by 2 because the first x colors are for the negative stuff
         for (let j = 0; j < m; ++j) {
           ctx.fillStyle = colors_[m + j];
 
