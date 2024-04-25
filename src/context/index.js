@@ -10,6 +10,7 @@ import apiServerDelay from './apiServerDelay';
 import apiSize from './apiSize';
 import apiStep from './apiStep';
 import apiZoom from './apiZoom';
+import apiCSS from './apiCSS';
 import update from './update';
 
 import apiMetric from '../metric';
@@ -41,6 +42,18 @@ const context = () => {
     _focus: null,
     _zoom: null,
     _scale: scaleTime().range([0, 1440]),
+    _cssClasses: {
+      horizon: 'horizon',
+      value: 'value',
+      title: 'title',
+      zoom: 'zoom',
+      line: 'line',
+      metric: 'metric',
+      primary: 'primary',
+      change: 'change',
+      positive: 'positive',
+      negative: 'negative',
+    },
   };
 
   const _context = Object.assign(
@@ -58,7 +71,8 @@ const context = () => {
     apiStart(state),
     apiStop(state),
     apiStep(state),
-    apiZoom(state)
+    apiZoom(state),
+    apiCSS(state)
   );
 
   state._timeout = setTimeout(_context.start, 10);

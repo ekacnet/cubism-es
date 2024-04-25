@@ -25,7 +25,7 @@ const apiRender = (state) => ({
     const line = selection
       .append('div')
       .datum({ id: id })
-      .attr('class', 'line')
+      .attr('class', _context.getCSSClass('line'))
       .style('position', 'absolute')
       .style('top', 0)
       .style('bottom', 0)
@@ -50,7 +50,14 @@ const apiRender = (state) => ({
         lines
           .enter()
           .append('div')
-          .attr('class', 'metric line')
+          .attr(
+            'class',
+            concat(
+              _context.getCSSClass('metric'),
+              ' ',
+              _context.getCSSClass('line')
+            )
+          )
           .style('position', 'absolute')
           .style('top', 0)
           .style('bottom', 0)

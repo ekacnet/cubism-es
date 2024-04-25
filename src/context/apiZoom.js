@@ -15,6 +15,7 @@ const apiReset = (zoomState) => ({
     zoomState._corner1 = null;
   },
 });
+
 const apiStop = (zoomState) => ({
   stop: (selection, pos) => {
     var x = Math.round(pos[0]);
@@ -94,7 +95,7 @@ const apiRender = (zoomState) => ({
     const frame = selection
       .append('svg')
       .datum({ id: id })
-      .attr('class', 'zoom')
+      .attr('class', _context.getCSSClass('zoom'))
       .style('position', 'absolute')
       .style('top', 0)
       .style('bottom', 0);

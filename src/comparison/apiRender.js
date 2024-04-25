@@ -31,10 +31,27 @@ const apiRender = (state) => ({
 
     selection.append('canvas').attr('width', _width).attr('height', _height);
 
-    selection.append('span').attr('class', 'title').text(_title);
+    selection
+      .append('span')
+      .attr('class', context.getCSSClass('title'))
+      .text(_title);
 
-    selection.append('span').attr('class', 'value primary');
-    selection.append('span').attr('class', 'value change');
+    selection
+      .append('span')
+      .attr(
+        'class',
+        concat(
+          context.getCSSClass('value'),
+          ' ',
+          context.getCSSClass('primary')
+        )
+      );
+    selection
+      .append('span')
+      .attr(
+        'class',
+        concat(context.getCSSClass('value'), ' ', context.getCSSClass('change'))
+      );
 
     selection.each(function (d, i) {
       const id = uuid(),
@@ -125,8 +142,17 @@ const apiRender = (state) => ({
           .text(isNaN(valueChange) ? null : _formatChange)
           .attr(
             'class',
-            'value change ' +
-              (valueChange > 0 ? 'positive' : valueChange < 0 ? 'negative' : '')
+            concat(
+              context.getCSSClass('value'),
+              ' ',
+              context.getCSSClass('change'),
+              ' '
+            ) +
+              (valueChange > 0
+                ? context.getCSSClass('positive')
+                : valueChange < 0
+                  ? context.getCSSClass('negative')
+                  : '')
           );
       };
 
