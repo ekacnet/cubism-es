@@ -59,6 +59,32 @@ npm run test        // run tests only
 npm run test:cover  // run tests and view coverage report
 ```
 
+### About vscode
+It seems that everybody (almost) is using vscode those days, I'm not (I'm using VIM) but in case you want to use it and do debug here is a config that worked for `launch.json`:
+
+```json
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch stock.html",
+            "type": "firefox",
+            "request": "launch",
+            "reAttach": true,
+            "url": "http://localhost:3004/stock.html",
+            "webRoot": "${workspaceFolder}",
+            "tmpDir": "${HOME}/Work/tmp",
+            "pathMappings": [
+                {
+                    "url": "http://localhost:3004/stock.html",
+                    "path": "${workspaceFolder}/demo/stock.html"
+                }
+            ]
+        }
+    ]
+}
+```
+
 ## Documentation
 For more information, please visit square/cubism's [home page](http://square.github.io/cubism/) and [wiki](https://github.com/square/cubism/wiki)
 

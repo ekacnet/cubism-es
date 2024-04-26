@@ -50,12 +50,17 @@ const apiRender = (context, state) => ({
 
     context.on('change.axis-' + id, () => {
       g.call(_axis);
-      if (!tick)
-        tick = select(
-          g.node().appendChild(g.selectAll('text').node().cloneNode(true))
-        )
-          .style('display', 'none')
-          .text(null);
+      if (!tick) {
+        // It seems under some circumptances (like using react) the selectAll().node() returns `null`
+        // so we test for it and avoid calling a subfunction
+        if (g.selectAll('text').node() !== null) {
+          tick = select(
+            g.node().appendChild(g.selectAll('text').node().cloneNode(true))
+          )
+            .style('display', 'none')
+            .text(null);
+        }
+      }
     });
 
     context.on('focus.axis-' + id, (i) => {
