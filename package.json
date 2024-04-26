@@ -1,7 +1,7 @@
 {
   "name": "cubism-es",
   "version": "1.2.0",
-  "description": "Cubism.js ES6 module, based on D3 V6 components",
+  "description": "Cubism.js ES6 module, based on D3 V7 components",
   "main": "dist/cubism-es.js",
   "module": "dist/cubism-es.esm.js",
   "jsnext:main": "dist/cubism-es.esm.js",
@@ -11,19 +11,27 @@
     "dev": "rollup -c rollup.config.dev.mjs -w",
     "serve": "rollup -c rollup.config.serve.mjs",
     "watch": "rollup -c -w",
-    "pretest": "npm run build",
     "e2e": "npx cypress run",
-    "test:watch": "mocha --reporter min --watch",
-    "test": "mocha",
-    "test:cover": "nyc mocha",
-    "prepublish": "npm test",
+    "test": "jest --watch --onlyChanged",
+    "test:ci": "jest --passWithNoTests --maxWorkers 4 --coverage",
+    "copy:reports": "mkdir -p coverage/combined && cp coverage/cypress/coverage-final.json coverage/combined/from-cypress.json && cp coverage/jest/coverage-final.json coverage/combined/from-jest.json",
+    "precombine:reports": "npm run copy:reports && mkdir -p .nyc_output",
+    "combine:reports": "npx nyc merge coverage/combined && mv coverage.json .nyc_output/out.json",
+    "prereport:combined": "npm run combine:reports",
+    "report:combined": "npx nyc report --reporter text --reporter clover --report json --report-dir coverage",
+    "report:lcov": "genhtml coverage/cypress/lcov.info coverage/jest/lcov.info --output-directory=coverage/lcov-report",
     "pretty": "prettier --write \"{src,__{tests,demo,dist}__}/**/*.js\""
   },
   "files": [
     "src",
     "dist"
   ],
+  "nyc": {
+    "report-dir": "coverage/cypress"
+  },
   "dependencies": {
+    "@testing-library/jest-dom": "^6.4.2",
+    "@types/d3": "^7.4.3",
     "d3-axis": "2",
     "d3-dispatch": "2",
     "d3-fetch": "2",
@@ -51,18 +59,26 @@
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-typescript": "^11.1.6",
+    "@swc/jest": "^0.2.36",
     "@testing-library/cypress": "^10.0.1",
+    "@types/jasmine": "^5.1.4",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.12.7",
     "babel-plugin-istanbul": "^6.1.1",
     "cypress": "^13.6.6",
     "cypress-localstorage-commands": "^2.2.5",
     "eslint": "^8.57.0",
-    "mocha": "^10.3.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "mocha": "^10.4.0",
     "nyc": "^15.1.0",
     "prettier": "^3.2.5",
     "rollup": "^4.16.4",
     "rollup-plugin-livereload": "^2.0.5",
     "rollup-plugin-local-resolve": "^1.0.7",
-    "rollup-plugin-serve": "^1.1.1"
+    "rollup-plugin-serve": "^1.1.1",
+    "ts-jest": "^29.1.2",
+    "ts-node": "^10.9.2"
   },
   "repository": {
     "type": "git",
@@ -74,7 +90,7 @@
     "ES6",
     "Data Visualization",
     "D3",
-    "D3V5"
+    "D3V7"
   ],
   "author": {
     "name": "Yun Xing",

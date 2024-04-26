@@ -87,6 +87,15 @@ const apiZoomTime = (zoomState) => ({
   },
 });
 
+const apiMisc = (zoomState) => ({
+  getFirstCorner: () => {
+    return zoomState._corner1;
+  },
+  getSecondCorner: () => {
+    return zoomState._corner2;
+  },
+});
+
 const apiRender = (zoomState) => ({
   render: (selection) => {
     const { _context } = zoomState;
@@ -179,6 +188,7 @@ const apiZoom = (context) => ({
       apiReset(state),
       apiRender(state),
       apiEnabled(state),
+      apiMisc(state),
       apiUpdateCurrentCorner(state),
       apiZoomTime(state)
     );

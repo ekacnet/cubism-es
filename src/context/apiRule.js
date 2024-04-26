@@ -52,11 +52,7 @@ const apiRender = (state) => ({
           .append('div')
           .attr(
             'class',
-            concat(
-              _context.getCSSClass('metric'),
-              ' ',
-              _context.getCSSClass('line')
-            )
+            _context.getCSSClass('metric') + ' ' + _context.getCSSClass('line')
           )
           .style('position', 'absolute')
           .style('top', 0)
