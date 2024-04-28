@@ -4,7 +4,7 @@ import { interpolateRound } from 'd3-interpolate';
 
 import apiRender from './apiRender';
 import apiMisc from './apiMisc';
-import apiRemove from './apiRemvoe';
+import apiRemove from './apiRemove';
 
 const apiHorizon = (context) => ({
   horizon: function () {
@@ -36,7 +36,7 @@ const apiHorizon = (context) => ({
 
     return Object.assign(
       state,
-      apiRemove(state),
+      apiRemove(context),
       apiMisc(state),
       apiRender(context, state)
     );

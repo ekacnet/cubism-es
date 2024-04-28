@@ -16,10 +16,14 @@ const ESModules = [
 
 module.exports = {
   modulePaths: ['./src'],
+  setupFiles: ['jest-canvas-mock'],
   setupFilesAfterEnv: ['./jest-setup.js'],
   testEnvironment: 'jest-environment-jsdom',
   testMatch: ['<rootDir>/src/tests/*.{test,jest}.{js,ts}'],
   coverageDirectory: 'coverage/jest',
+  testEnvironmentOptions: {
+    url: 'https://localhost/?mockedQueryString=true&Another=2',
+  },
   watchPathIgnorePatterns: [
     '/node_modules/', // Ignore changes in node_modules directory
     '/dist/', // Ignore changes in the dist directory

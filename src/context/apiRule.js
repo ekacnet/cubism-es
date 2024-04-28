@@ -58,9 +58,11 @@ const apiRender = (state) => ({
           .style('top', 0)
           .style('bottom', 0)
           .style('width', '1px')
-          .style('pointer-events', 'none');
-
-        lines.style('left', (i) => i + 'px');
+          .style('pointer-events', 'none')
+          .style('left', (d) => {
+            var px = d + 'px';
+            return px;
+          });
       };
 
       _context.on('change.rule-' + id, change);

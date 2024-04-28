@@ -28,7 +28,9 @@ const apiRemove = (axisState) => ({
 const apiFocusFormat = (axisState) => ({
   focusFormat: (_ = null) => {
     if (_ === null)
-      return axisState.format === formatDefault(axisState.context) ? null : _;
+      return axisState.format === formatDefault(axisState.context)
+        ? null
+        : axisState.format;
     axisState.format = _ == null ? formatDefault(context) : _;
     return axisState;
   },
