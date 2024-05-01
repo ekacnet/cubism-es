@@ -1,4 +1,5 @@
 # cubism-es
+[![codecov](https://codecov.io/gh/ekacnet/cubism-es/graph/badge.svg?token=P3QB0BZKKA)](https://codecov.io/gh/ekacnet/cubism-es)
 cubism-es is an ES6 module of [cubism](https://github.com/square/cubism), based on d3v7.
 
 > **IMPORTANT** Version 1.1.0 contains api breaks. Please see below for details
@@ -85,8 +86,14 @@ It seems that everybody (almost) is using vscode those days, I'm not (I'm using 
 }
 ```
 
+### About the main and the master branches
+
+In git repositories, main or master are usually considered root branch but you usually have just one of them (either `main` or `master`) not both.
+
+So why 2 here ?, as of Mayu 2024 I (Matthieu) still have hope to get in touch with the original maintainer of `cubism-es` and that's why I maintain a stack of diff against his root branch: `master` but that starts to be annoying when you want to use a more up to date and maintained version, that's why I created the `main` branch with what I think is a stable version of the code.
+
 ## Documentation
-For more information, please visit square/cubism's [home page](http://square.github.io/cubism/) and [wiki](https://github.com/square/cubism/wiki)
+For more information, please visit square/cubism's [home page](http://square.github.io/cubism/) and [wiki](https://github.com/square/cubism/wiki), this version should support the same API.
 
 Starting from `1.2.0` there is a new `zoom` api for `context`, as the name implies it allows to zoom on the horizon(s).
 In order to do so add something like this:
