@@ -94,6 +94,9 @@
         right: 0;
     }
 
+    .zoom{
+        z-index: 2;
+    }
     .line {
         background: #000;
         z-index: 2;
@@ -120,6 +123,13 @@
         .attr("class", "rule");
 
     context.rule().render(r);
+    const z = d3.select("body").append("div")
+        .attr("class", "zoom");
+
+    context.zoom(function(start, end) {
+        console.log(`Doing a zoom from point ${start} to point ${end}`);
+        context.zoom().zoomTime(start, end);
+    }).render(z);
 
     const h = d3.select("body").selectAll(".horizon")
         .data(d3.range(1, 50).map(random))
@@ -138,7 +148,11 @@
         var value = 0,
             values = [],
             i = 0,
-            last;
+            last, last_width = 0,
+            last_stop = null, last_step =0;
+
+        var metric_name = x;
+
         return context.metric(function(start, stop, step, callback) {
             start = +start, stop = +stop;
             if (isNaN(last)) last = start;
@@ -147,8 +161,35 @@
                 value = Math.max(-10, Math.min(10, value + .8 * Math.random() - .4 + .2 * Math.cos(i += x * .02)));
                 values.push(value);
             }
-            callback(null, values = values.slice((start - stop) / step));
-        }, x);
+            if (last_step == 0) {
+                last_width = (stop - start) / step;
+            }
+            if (last_step ==  0 || last_step == step) {
+                // first argument is the error, null indicates no error
+                callback(null, values.slice((start - stop) / step));
+            } else {
+                // calculate last_start relative to last stop, store witdth
+                last_start = last_stop - (last_step * last_width);
+                // get the last width / nb_points elements
+                var tmp = values.slice(-last_width);
+                var offset_start = (start - last_start) / last_step
+                var cur = start - step;
+                var offset = offset_start;
+                var old_cur = start;
+                var new_values = []
+                while (cur < stop) {
+                    while((cur = cur + step ) < old_cur && cur <= stop) new_values.push(tmp[offset  - 1])
+                    if (cur < stop) {
+                        new_values.push(tmp[offset])
+                        old_cur = old_cur + last_step;
+                        offset++;
+                    }
+                }
+                callback(null, new_values);
+            }
+            last_stop = stop;
+            last_step = step;
+        }, metric_name);
     }
 
 </script>

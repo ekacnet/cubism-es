@@ -1,6 +1,9 @@
 const apiStop = (state) => ({
   stop: () => {
-    state._timeout = clearTimeout(state._timeout);
+    if (state._timeout !== null && state._timeout !== -1) {
+      clearTimeout(state._timeout);
+      state._timeout = -1;
+    }
     return state;
   },
 });

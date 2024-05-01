@@ -14,6 +14,11 @@ const beforechange = (state) => (start1, stop1) => {
 // how much refetch if there is a lag
 const metric_overlap = 6;
 
+const reset = (state) => () => {
+  state._start = -Infinity;
+  state.value = [];
+};
+
 // Prefetch new data into a temporary array.
 const prepare = (state, request) => (start1, stop) => {
   const { _start, _step, _fetching, _event, _size } = state;
@@ -46,6 +51,7 @@ const apiOn = (state, request) => ({
     } else {
       if (_event.on(type) == null && ++state._listening === 1) {
         context
+          .on('reset' + _id, reset(state))
           .on('prepare' + _id, prepare(state, request))
           .on('beforechange' + _id, beforechange(state));
       }
