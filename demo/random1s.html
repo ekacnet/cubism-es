@@ -94,6 +94,9 @@
         right: 0;
     }
 
+    .zoom{
+        z-index: 2;
+    }
     .line {
         background: #000;
         z-index: 2;
@@ -106,32 +109,22 @@
 <body id="demo">
 <script>
 
-    var delay = Date.now()  - new Date(2012, 4, 2)
-    var size = 1280;
     var context = cubism.context()
-        .serverDelay(delay)
-        .step(864e5) // 86400 000 aka 86400 seconds
-        .size(size)
-        .stop();
+        .step(1e3)
+        .size(1280);
 
     d3.select("#demo").selectAll(".axis")
-        .data(['top', "bottom"])
+        .data(["top", "bottom"])
         .enter().append("div")
         .attr("class", function(d) { return d + " axis"; })
-        .each(function(d) { context.axis().ticks(12).orient(d).render(d3.select(this)) });
+        .each(function(d) { context.axis().ticks(12).orient(d).render(d3.select(this)); });
 
-    const d = d3.select("body").append("div")
+    const r = d3.select("body").append("div")
+        .data(d3.range(1, 2).map(rulePoints))
         .attr("class", "rule")
         .attr('id', 'rule');
-    context.rule().render(d);
 
-    d3.select("body").selectAll(".horizon")
-        .data(["AAPL", "BIDU", "SINA", "GOOG", "MSFT", "YHOO", "ADBE", "REDF", "INSP", "IACI", "AVID", "CCUR", "DELL", "DGII", "HPQ", "SGI", "SMCI", "SNDK", "SYNA"].map(stock))
-        .enter().insert("div", ".bottom")
-        .attr("class", "horizon");
-
-
-    context.horizon().format(d3.format("+,.2p")).render(d3.selectAll('.horizon'))
+    context.rule().render(r);
     const z = d3.select("body").append("div")
         .attr("class", "zoom");
 
@@ -140,38 +133,90 @@
         context.zoom().zoomTime(start, end);
     }).render(z);
 
+    const h = d3.select("body").selectAll(".horizon")
+        .data(d3.range(1, 50).map(random))
+        .enter().insert("div", ".bottom")
+        .attr("class", "horizon");
+    context.horizon()
+        .extent([-10, 10])
+        .render(h);
 
     context.on("focus", function(i) {
         d3.selectAll(".value").style("right", i == null ? null : context.size() - i + "px");
     });
 
-    // Replace this with context.graphite and graphite.metric!
-    function stock(name) {
-        var format = d3.timeParse("%d-%b-%y");
+    context.setCSSClass('primary', 'abc');
+    var newName = context.getCSSClass('primary');
+    console.log("After setting className for 'primary'", newName);
+
+    // Pretend to generate a list of interesting point(s)
+    // for the moment just one in the middle ...
+    function rulePoints(x) {
+        var values = [];
+        var last;
         return context.metric(function(start, stop, step, callback) {
-            d3.csv("data/stocks/" + name + ".csv").then(rows => {
-                // read all the rows date the date and the open value, filter only for lines where
-                // there is data
-                rows = rows.map(function(d) { return [format(d.Date), +d.Open]; }).filter(function(d) { return d[1]; }).reverse();
-                var date = rows[0][0], compare = rows[400][1], value = 0, values = [];
-                rows.forEach(function(d) {
-                    if (d[0] >= start  && d[0] <= stop) {
-                        if (date < start) {
-                            console.log(`Forcing ${date} to ${start} end = ${stop} d[0] = ${d[0]} ${step/1000}`);
-                            date = start
-                        }
-                        while ((date = d3.timeMillisecond.offset(date, step )) < d[0]) { values.push(value);}
-                        values.push(value = (d[1] - compare) / compare);
-                    } else {
-                       date = d[0]
+            start = +start, stop = +stop;
+            if (isNaN(last)) last = start;
+            while (last < stop) {
+                last += step;
+                var v = (last -start) - ((stop - start) / 2);
+                if ( v > 0 && v <= step) {
+                    values.push(5);
+                } else {
+                    values.push(null);
+                }
+            }
+            callback(null, values);
+        }, "rule")
+    }
+
+    // Replace this with context.graphite and graphite.metric!
+    function random(x) {
+        var value = 0,
+            values = [],
+            i = 0,
+            last, last_width = 0,
+            last_stop = null, last_step =0;
+
+        var metric_name = x;
+
+        return context.metric(function(start, stop, step, callback) {
+            start = +start, stop = +stop;
+            if (isNaN(last)) last = start;
+            while (last < stop) {
+                last += step;
+                value = Math.max(-10, Math.min(10, value + .8 * Math.random() - .4 + .2 * Math.cos(i += x * .02)));
+                values.push(value);
+            }
+            if (last_step == 0) {
+                last_width = (stop - start) / step;
+            }
+            if (last_step ==  0 || last_step == step) {
+                // first argument is the error, null indicates no error
+                callback(null, values.slice((start - stop) / step));
+            } else {
+                // calculate last_start relative to last stop, store witdth
+                last_start = last_stop - (last_step * last_width);
+                // get the last width / nb_points elements
+                var tmp = values.slice(-last_width);
+                var offset_start = (start - last_start) / last_step
+                var cur = start - step;
+                var offset = offset_start;
+                var old_cur = start;
+                var new_values = []
+                while (cur < stop) {
+                    while((cur = cur + step ) < old_cur && cur <= stop) new_values.push(tmp[offset  - 1])
+                    if (cur < stop) {
+                        new_values.push(tmp[offset])
+                        old_cur = old_cur + last_step;
+                        offset++;
                     }
-                });
-                const desired_length = (stop -start)/step;
-                while (values.length < desired_length) values.push(value);
-                callback(null, values);
-            });
-        }, name);
+                }
+                callback(null, new_values);
+            }
+            last_stop = stop;
+            last_step = step;
+        }, metric_name);
     }
 
 </script>
-

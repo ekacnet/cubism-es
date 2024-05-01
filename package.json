@@ -18,6 +18,7 @@
     "precombine:reports": "npm run copy:reports && mkdir -p .nyc_output",
     "combine:reports": "npx nyc merge coverage/combined && mv coverage.json .nyc_output/out.json",
     "prereport:combined": "npm run combine:reports",
+    "prereport:lcov": "npm run precombine:reports",
     "report:combined": "npx nyc report --reporter text --reporter clover --report json --report-dir coverage",
     "report:lcov": "genhtml coverage/cypress/lcov.info coverage/jest/lcov.info --output-directory=coverage/lcov-report",
     "pretty": "prettier --write \"{src,__{tests,demo,dist}__}/**/*.js\""
@@ -69,6 +70,7 @@
     "cypress-localstorage-commands": "^2.2.5",
     "eslint": "^8.57.0",
     "jest": "^29.7.0",
+    "jest-canvas-mock": "^2.5.2",
     "jest-environment-jsdom": "^29.7.0",
     "mocha": "^10.4.0",
     "nyc": "^15.1.0",

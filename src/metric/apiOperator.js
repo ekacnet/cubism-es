@@ -3,19 +3,25 @@ const genericOperate = (name, operate) => (state, metric) => {
     {},
     state,
     {
-      valueAt: (i) => operate(state.valueAt(i), metric.valueAt(i)),
+      valueAt: (i) => {
+        let v = operate(
+          state.valueAt(i),
+          metric instanceof Object ? metric.valueAt(i) : metric
+        );
+        return v;
+      },
       toString: () => `${state} ${name} ${metric}`,
       on: (type, listener = null) => {
         if (listener === null) return state.on(type);
         state.on(type, listener);
-        metric.on(type, listener);
+        if (metric instanceof Object) metric.on(type, listener);
       },
     },
     {
       shift: (offset) =>
         genericOperate(name, operate)(
           state.shift(offset),
-          metric.shift(offset)
+          metric instanceof Object ? metric.shift(offset) : metric
         ),
     }
   );

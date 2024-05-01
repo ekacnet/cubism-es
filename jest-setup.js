@@ -15,4 +15,7 @@ Object.defineProperty(global, 'matchMedia', {
   })),
 });
 
+// Disable this and use instead jest-canvas-mock
+/*
 HTMLCanvasElement.prototype.getContext = () => {};
+*/

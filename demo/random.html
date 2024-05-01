@@ -120,7 +120,8 @@
         .each(function(d) { context.axis().ticks(12).orient(d).render(d3.select(this)); });
 
     const r = d3.select("body").append("div")
-        .attr("class", "rule");
+        .attr("class", "rule")
+        .attr('id', 'rule');
 
     context.rule().render(r);
     const z = d3.select("body").append("div")
