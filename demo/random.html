@@ -143,6 +143,10 @@
         d3.selectAll(".value").style("right", i == null ? null : context.size() - i + "px");
     });
 
+    context.setCSSClass('primary', 'abc');
+    var newName = context.getCSSClass('primary');
+    console.log("After setting className for 'primary'", newName);
+
     // Replace this with context.graphite and graphite.metric!
     function random(x) {
         var value = 0,

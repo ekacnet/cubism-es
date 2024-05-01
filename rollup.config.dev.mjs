@@ -1,9 +1,8 @@
 import { babel } from '@rollup/plugin-babel';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
+import typescript from '@rollup/plugin-typescript';
 import json from '@rollup/plugin-json';
-import fs from 'fs';
-import postcss from 'rollup-plugin-postcss';
 import localResolve from 'rollup-plugin-local-resolve';
 import livereload from 'rollup-plugin-livereload';
 import serve from 'rollup-plugin-serve';
@@ -22,15 +21,15 @@ export default {
       preferConst: true,
     }),
     localResolve(),
-    postcss({ extract: 'demo/cubism-es.css' }),
     babel({ babelHelpers: 'bundled' }),
     resolve({
       module: true,
       jsnext: true,
       main: true,
-      extensions: ['.js'],
+      extensions: ['.js', '.ts'],
     }),
     commonjs(),
+    typescript(),
     serve({
       open: true,
       verbose: true,

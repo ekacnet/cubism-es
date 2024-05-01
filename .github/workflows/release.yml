@@ -25,12 +25,13 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
-      - name: Unit tests
-        run: npm run test
       - name: Build
         run: npm run build
+
+      - name: Unit tests
+        run: npm run test:ci
 
       - name: Store the artifacts
         uses: actions/upload-artifact@v4

@@ -15,6 +15,7 @@ const apiReset = (zoomState) => ({
     zoomState._corner1 = null;
   },
 });
+
 const apiStop = (zoomState) => ({
   stop: (selection, pos) => {
     var x = Math.round(pos[0]);
@@ -86,6 +87,15 @@ const apiZoomTime = (zoomState) => ({
   },
 });
 
+const apiMisc = (zoomState) => ({
+  getFirstCorner: () => {
+    return zoomState._corner1;
+  },
+  getSecondCorner: () => {
+    return zoomState._corner2;
+  },
+});
+
 const apiRender = (zoomState) => ({
   render: (selection) => {
     const { _context } = zoomState;
@@ -94,7 +104,7 @@ const apiRender = (zoomState) => ({
     const frame = selection
       .append('svg')
       .datum({ id: id })
-      .attr('class', 'zoom')
+      .attr('class', _context.getCSSClass('zoom'))
       .style('position', 'absolute')
       .style('top', 0)
       .style('bottom', 0);
@@ -178,6 +188,7 @@ const apiZoom = (context) => ({
       apiReset(state),
       apiRender(state),
       apiEnabled(state),
+      apiMisc(state),
       apiUpdateCurrentCorner(state),
       apiZoomTime(state)
     );

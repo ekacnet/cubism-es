@@ -57,9 +57,12 @@ const apiRender = (context, state) => ({
 
     selection.append('canvas').attr('width', _width).attr('height', _height);
 
-    selection.append('span').attr('class', 'title').text(_title);
+    selection
+      .append('span')
+      .attr('class', context.getCSSClass('title'))
+      .text(_title);
 
-    selection.append('span').attr('class', 'value');
+    selection.append('span').attr('class', context.getCSSClass('value'));
 
     selection.each(function (d, i) {
       const id = ++context._id,
