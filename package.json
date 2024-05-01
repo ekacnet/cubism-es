@@ -19,7 +19,7 @@
     "combine:reports": "npx nyc merge coverage/combined && mv coverage.json .nyc_output/out.json",
     "prereport:combined": "npm run combine:reports",
     "prereport:lcov": "npm run precombine:reports",
-    "report:combined": "npx nyc report --reporter text --reporter clover --report json --report-dir coverage",
+    "report:combined": "npx nyc report --reporter text --reporter clover --reporter json --report-dir coverage",
     "report:lcov": "genhtml coverage/cypress/lcov.info coverage/jest/lcov.info --output-directory=coverage/lcov-report",
     "pretty": "prettier --write \"{src,__{tests,demo,dist}__}/**/*.js\""
   },
