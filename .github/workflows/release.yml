@@ -36,22 +36,25 @@ jobs:
       - name: Store the artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: js-package
+          name: js-packages
           path: dist/
 
   release:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Download all the dists
         uses: actions/download-artifact@v4
         with:
-          name: get-packages
+          name: js-packages
           path: dist/
+      - name: rename
+        run: mv dist cubism-es
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
             draft: true
             generate_release_notes: true
             files: |
-              ./dist/*
+              ./cubism-es
