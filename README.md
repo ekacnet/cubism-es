@@ -1,5 +1,6 @@
 # cubism-es
 [![codecov](https://codecov.io/gh/ekacnet/cubism-es/graph/badge.svg?token=P3QB0BZKKA)](https://codecov.io/gh/ekacnet/cubism-es)
+[![actions](https://github.com/ekacnet/cubism-es/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ekacnet/cubism-es/actions)
 
 cubism-es is an ES6 module of [cubism](https://github.com/square/cubism), based on d3v7.
 
