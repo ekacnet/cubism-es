@@ -92,7 +92,7 @@ describe('horizon', () => {
   it('works when calling colors() with arg', () => {
     hz.remove(h);
     expect(document.body.innerHTML).toBe(
-      '<div id="demo"><div class="horizon"><div a="b"></div><span class="title">serie 2</span></div><div class="horizon"><div a="b"></div><span class="title">serie 3</span></div></div>'
+      '<div id="demo"><div class="horizon"><div a="b"></div></div><div class="horizon"><div a="b"></div></div></div>'
     );
   });
 });

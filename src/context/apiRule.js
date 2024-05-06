@@ -3,7 +3,7 @@ const apiRemove = (ruleState, selection) => ({
     const { _context } = ruleState;
 
     selection
-      .selectAll('.line')
+      .selectAll('.' + _context.getCSSClass('line'))
       .each((d) => _context.on('focus.rule-' + d.id, null))
       .remove();
   },
@@ -45,7 +45,9 @@ const apiRender = (state) => ({
           }
         }
 
-        const lines = selection.selectAll('.metric').data(values);
+        const lines = selection
+          .selectAll('.' + _context.getCSSClass('metric'))
+          .data(values);
         lines.exit().remove();
         lines
           .enter()
