@@ -10,7 +10,11 @@ const apiRemove = (context) => ({
 
     selection.selectAll('canvas').each(remove).remove();
 
-    selection.selectAll('._title,.value').remove();
+    selection
+      .selectAll(
+        '.' + context.getCSSClass('title') + ',.' + context.getCSSClass('value')
+      )
+      .remove();
   },
 });
 
