@@ -71,7 +71,7 @@ const apiRender = (context, state) => ({
         extent_ = typeof _extent === 'function' ? _extent(d, i) : _extent,
         step = context.step(),
         canvas = select(this).select('canvas'),
-        span = select(this).select('.value'),
+        span = select(this).select('.' + context.getCSSClass('value')),
         m = colors_.length >> 1;
 
       let start = -Infinity,

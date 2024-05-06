@@ -65,8 +65,8 @@ const apiRender = (state) => ({
           typeof _extent === 'function' ? _extent.call(this, d, i) : _extent,
         div = select(this),
         canvas = div.select('canvas'),
-        spanPrimary = div.select('.value.primary'),
-        spanChange = div.select('.value.change');
+        spanPrimary = div.select('.' + context.getCSSClass('primary')),
+        spanChange = div.select('.' + context.getCSSClass('change'));
 
       let ready = null;
 
