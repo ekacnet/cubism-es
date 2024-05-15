@@ -28,9 +28,12 @@
     "dist"
   ],
   "nyc": {
+    "extends": "@istanbuljs/nyc-config-typescript",
+    "all": true,
     "report-dir": "coverage/cypress"
   },
   "dependencies": {
+    "@istanbuljs/nyc-config-typescript": "^1.0.2",
     "@testing-library/jest-dom": "^6.4.2",
     "@types/d3": "^7.4.3",
     "d3-axis": "2",
@@ -42,17 +45,19 @@
     "d3-selection": "2",
     "d3-time": "2",
     "d3-time-format": "3",
-    "d3-transition": "^3.0.1"
+    "d3-transition": "^3.0.1",
+    "source-map-support": "^0.5.21"
   },
   "peerDependencies": {
     "d3": "^7.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.9",
-    "@babel/core": "^7.24.0",
+    "@babel/core": "^7.24.5",
     "@babel/eslint-parser": "^7.23.10",
     "@babel/plugin-transform-classes": "^7.23.8",
-    "@babel/preset-env": "^7.24.0",
+    "@babel/preset-env": "^7.24.5",
+    "@babel/preset-typescript": "^7.24.1",
     "@babel/register": "^7.23.7",
     "@cypress/code-coverage": "^3.12.32",
     "@rollup/plugin-babel": "^6.0.4",
@@ -75,7 +80,7 @@
     "mocha": "^10.4.0",
     "nyc": "^15.1.0",
     "prettier": "^3.2.5",
-    "rollup": "^4.16.4",
+    "rollup": "^4.17.2",
     "rollup-plugin-livereload": "^2.0.5",
     "rollup-plugin-local-resolve": "^1.0.7",
     "rollup-plugin-serve": "^1.1.1",
