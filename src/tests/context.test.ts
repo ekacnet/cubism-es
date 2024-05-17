@@ -1,6 +1,16 @@
 import context from '../context';
 import * as d3 from 'd3';
 
+describe('apiKeyboard', () => {
+  it('should work for captureArrows', () => {
+    let cubismContext = context();
+    document.body.innerHTML = '<div id="demo"></div>';
+    let d = d3.select('#demo');
+    let r = cubismContext.captureArrows(d);
+    expect(r).toBe(cubismContext);
+  });
+});
+
 describe('apiCSS', () => {
   it('should work for setCSSClass when there is a valid class', () => {
     let cubismContext = context();

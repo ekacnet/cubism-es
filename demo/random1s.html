@@ -141,6 +141,10 @@
         .extent([-10, 10])
         .render(h);
 
+    // The element must be focusable.
+    b = d3.select("body");
+    context.captureArrows(b)
+
     context.on("focus", function(i) {
         d3.selectAll(".value").style("right", i == null ? null : context.size() - i + "px");
     });

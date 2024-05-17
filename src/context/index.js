@@ -11,6 +11,7 @@ import apiSize from './apiSize';
 import apiStep from './apiStep';
 import apiZoom from './apiZoom';
 import apiCSS from './apiCSS';
+import apiKeyboard from './apiKeyboard';
 import update from './update';
 
 import apiMetric from '../metric';
@@ -72,30 +73,11 @@ const context = () => {
     apiStop(state),
     apiStep(state),
     apiZoom(state),
-    apiCSS(state)
+    apiCSS(state),
+    apiKeyboard(state)
   );
 
   state._timeout = setTimeout(_context.start, 10);
-
-  const { _size } = _context;
-
-  // note: this is not working (anymore ?)
-  select(window).on('keydown.context-' + ++_context._id, function (event) {
-    switch (!event.metaKey && event.keyCode) {
-      case 37: // left
-        if (context._focus == null) _context._focus = _size - 1;
-        if (context._focus > 0) _context.focus(--_context._focus);
-        break;
-      case 39: // right
-        if (context._focus == null) _context._focus = _size - 2;
-        if (context._focus < _size - 1) _context.focus(++_context._focus);
-        break;
-      default:
-        return;
-    }
-
-    event.preventDefault();
-  });
 
   const cubismContext = update(_context);
 
