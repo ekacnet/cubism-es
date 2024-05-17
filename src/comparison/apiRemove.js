@@ -11,7 +11,11 @@ const apiRemove = (state) => ({
     selection.on('mousemove.comparison', null).on('mouseout.comparison', null);
     selection.selectAll('canvas').each(_remove).remove();
 
-    selection.selectAll('.title,.value').remove();
+    selection
+      .selectAll(
+        '.' + context.getCSSClass('title') + ',.' + context.getCSSClass('value')
+      )
+      .remove();
   },
 });
 
