@@ -2,7 +2,6 @@ import { babel } from '@rollup/plugin-babel';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
-import localResolve from 'rollup-plugin-local-resolve';
 import typescript from '@rollup/plugin-typescript';
 import serve from 'rollup-plugin-serve';
 
@@ -13,8 +12,6 @@ export default {
       exclude: ['node_modules'],
       preferConst: true,
     }),
-    localResolve(),
-    babel(),
     resolve({
       module: true,
       jsnext: true,
@@ -23,10 +20,15 @@ export default {
     }),
     commonjs(),
     typescript(),
+    babel({
+      extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      babelHelpers: 'bundled',
+      plugins: ['istanbul'],
+    }),
     serve({
       open: false,
       verbose: true,
-      contentBase: ['demo', 'dist'],
+      contentBase: ['demo'],
       historyApiFallback: false,
       host: 'localhost',
       port: 3004,

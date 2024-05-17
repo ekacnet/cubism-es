@@ -3,7 +3,6 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
 import json from '@rollup/plugin-json';
-import localResolve from 'rollup-plugin-local-resolve';
 import livereload from 'rollup-plugin-livereload';
 import serve from 'rollup-plugin-serve';
 
@@ -20,8 +19,6 @@ export default {
       exclude: ['node_modules'],
       preferConst: true,
     }),
-    localResolve(),
-    babel({ babelHelpers: 'bundled' }),
     resolve({
       module: true,
       jsnext: true,
@@ -30,10 +27,15 @@ export default {
     }),
     commonjs(),
     typescript(),
+    babel({
+      extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      babelHelpers: 'bundled',
+      plugins: ['istanbul'],
+    }),
     serve({
       open: true,
       verbose: true,
-      contentBase: ['demo', 'dist'],
+      contentBase: ['demo'],
       historyApiFallback: false,
       host: 'localhost',
       port: 3004,
