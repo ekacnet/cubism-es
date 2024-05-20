@@ -6,6 +6,9 @@ describe('horizon', () => {
   let hz;
   var cubismContext;
   let h;
+  afterEach(() => {
+    jest.useRealTimers();
+  });
   beforeEach(() => {
     document.body.innerHTML = '<div id="demo"></div>';
     cubismContext = context().step(1e4).size(10);
@@ -89,10 +92,42 @@ describe('horizon', () => {
     hz.colors(['#112233', '#AABBCC']);
     expect(hz.colors()).toStrictEqual(['#112233', '#AABBCC']);
   });
-  it('works when calling colors() with arg', () => {
+  it('works when calling remove() with arg', () => {
     hz.remove(h);
     expect(document.body.innerHTML).toBe(
-      '<div id="demo"><div class="horizon"><div a="b"></div></div><div class="horizon"><div a="b"></div></div></div>'
+      '<div id="demo"><div class="horizon"></div><div class="horizon"></div></div>'
+    );
+  });
+  it('works when the value is null', () => {
+    jest.useFakeTimers();
+    document.body.innerHTML = '<div id="demo"></div>';
+    var thisContext = context()
+      .step(1e3)
+      .size(10)
+      .serverDelay(0)
+      .clientDelay(0);
+    const getData = (i) => {
+      return thisContext.metric(
+        function (start, stop, step, callback) {
+          let values = [1, 2, 3, 4, 5, 6, 7, 8, 9, i == 2 ? null : 10];
+          callback(null, values);
+        },
+        'serie ' + (i + 1)
+      );
+    };
+
+    h = d3
+      .select('#demo')
+      .selectAll('.horizon')
+      .data(d3.range(1, 3).map(getData))
+      .enter()
+      .insert('div', '.bottom')
+      .attr('class', 'horizon');
+    hz = thisContext.horizon();
+    hz.render(h);
+
+    expect(document.body.innerHTML).toBe(
+      '<div id="demo"><div class="horizon"><canvas width="10" height="30"></canvas><span class="title">serie 2</span><span class="value">10</span></div><div class="horizon"><canvas width="10" height="30"></canvas><span class="title">serie 3</span><span class="value"></span></div></div>'
     );
   });
 });

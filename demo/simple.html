@@ -234,6 +234,7 @@
 </style>
 <div id="body">
     <div id="example2a"></div>
+    <div id="example2c"></div>
 </div>
 
 <script src="lib/d3.v7.min.js" charset="utf-8"></script>
@@ -241,7 +242,7 @@
 <script src="./cubism-es.standalone.js"></script>
 <script>
 
-    function random(name) {
+    function random(name, addNull=false) {
         var value = 0,
             values = [],
             i = 0,
@@ -253,6 +254,9 @@
                 last += step;
                 value = Math.max(-10, Math.min(10, value + .8 * Math.random() - .4 + .2 * Math.cos(i += .2)));
                 values.push(value);
+            }
+            if (addNull) {
+                values.push(null)
             }
 
             callback(null, values = values.slice((start - stop) / step));
@@ -270,6 +274,7 @@
 
     var foo = random("foo"),
         bar = random("bar");
+        baz = random("baz", true);
 
     // console.log(foo.add(bar));
     // console.log(foo.subtract(bar));
@@ -316,6 +321,25 @@
 
         context.horizon()
             .height(80)
+            .mode("mirror")
+            .colors(["#bdd7e7","#bae4b3"])
+            .title("Area (80px)")
+            .extent([-10, 10])
+            .render(b);
+    });
+    var context2 = cubism.context()
+        .serverDelay(0)
+        .clientDelay(0)
+        .step(1e3)
+        .size(960).
+        stop();
+    d3.select("#example2c").call(function(div) {
+        div.datum(baz);
+        const b = div.append("div")
+            .attr("class", "horizon");
+
+        context2.horizon()
+            .height(30)
             .mode("mirror")
             .colors(["#bdd7e7","#bae4b3"])
             .title("Area (30px)")
@@ -369,6 +393,9 @@
 
     // On mousemove, reposition the chart values to match the rule.
     context.on("focus", function(i) {
+        d3.selectAll(".value").style("right", i == null ? null : context.size() - i + "px");
+    });
+    context2.on("focus", function(i) {
         d3.selectAll(".value").style("right", i == null ? null : context.size() - i + "px");
     });
 
