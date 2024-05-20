@@ -3,7 +3,6 @@ import * as d3 from 'd3';
 
 const apiRender = (context, state) => ({
   render: (selection) => {
-    selection.append('div').attr('a', 'b');
     const {
       _width,
       _height,
@@ -177,7 +176,11 @@ const apiRender = (context, state) => ({
 
       const focus = (i) => {
         if (i == null) i = _width - 1;
-        const value = metric_.valueAt(i);
+        var value = metric_.valueAt(i);
+        // strangely enough null is a value ... in some way
+        if (value === null) {
+          value = undefined;
+        }
         span.datum(value).text(isNaN(value) ? null : _format);
       };
 
