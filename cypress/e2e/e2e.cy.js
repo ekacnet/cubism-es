@@ -271,24 +271,24 @@ describe('Stock Check Test With Zoom', function () {
     cy.get('div.horizon')
       .first()
       .then(($div) => {
-        cy.get('body').trigger('mousemove', 10, 0);
+        cy.get('body').trigger('mousemove', 10, 70);
         cy.get('body').trigger('mousedown', {
           eventConstructor: 'MouseEvent',
           button: 0,
           clientX: 10,
-          clientY: 0,
+          clientY: 70,
         });
         cy.wait(200);
         cy.get('body').trigger('mousemove', {
           eventConstructor: 'MouseEvent',
           clientX: 300,
-          clientY: 10,
+          clientY: 80,
         });
         cy.wait(200);
         cy.get('body').trigger('mouseup', {
           eventConstructor: 'MouseEvent',
           clientX: 300,
-          clientY: 10,
+          clientY: 80,
         });
         // Deal with the delay in rendering after zooming
         cy.wait(600);
@@ -299,7 +299,7 @@ describe('Stock Check Test With Zoom', function () {
           .first()
           .then(($div) => {
             const divOffset = $div.offset();
-            cy.get('body').trigger('mousemove', 10, 0);
+            cy.get('body').trigger('mousemove', 10, 70);
           });
         cy.get('#rule')
           .find('div.line')

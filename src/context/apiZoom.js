@@ -6,7 +6,13 @@ const apiStart = (zoomState) => ({
   start: (selection, pos) => {
     var x = Math.round(pos[0]);
     var y = Math.round(pos[1]);
+    if (zoomState._zoomStyle === 'onelane') {
+      y = selection.node().offsetTop;
+    } else if (zoomState._zoomStyle === 'full') {
+      y = selection.node().parentNode.offsetTop;
+    }
     zoomState._corner1 = [x, y];
+    zoomState._selection = selection;
   },
 });
 
@@ -17,7 +23,7 @@ const apiReset = (zoomState) => ({
 });
 
 const apiStop = (zoomState) => ({
-  stop: (selection, pos) => {
+  stop: (pos) => {
     var x = Math.round(pos[0]);
     var y = Math.round(pos[1]);
     zoomState._corner2 = [x, y];
@@ -28,18 +34,19 @@ const apiStop = (zoomState) => ({
       var start = Math.min(zoomState._corner1[0], zoomState._corner2[0]);
       var end = Math.max(zoomState._corner1[0], zoomState._corner2[0]);
       if (start !== end) {
-        zoomState._callback(start, end);
+        zoomState._callback(start, end, zoomState._selection);
       } else {
         console.log('Skipping zoom on 1 point');
       }
     }
     // force the zoom indicator to hide
     zoomState._corner1 = null;
+    zoomState._selection = null;
   },
 });
 
 const apiZoomTime = (zoomState) => ({
-  zoomTime: (start, stop) => {
+  zoomTime: (start, stop, selection) => {
     const { _context } = zoomState;
     const { _step } = _context;
 
@@ -50,9 +57,7 @@ const apiZoomTime = (zoomState) => ({
     }
     var new_start_time = _context._scale.invert(start);
     var new_end_time = _context._scale.invert(stop);
-    console.log('zoomTime() called');
-    console.log(`${new_start_time} ${new_end_time}`);
-
+    var span = selection.select('.' + context.getCSSClass('title'));
     // stop the timeout
     _context.stop();
     var width = (new_end_time - new_start_time) / _context._size;
@@ -94,6 +99,15 @@ const apiMisc = (zoomState) => ({
   getSecondCorner: () => {
     return zoomState._corner2;
   },
+  getCurrentCorner: () => {
+    return zoomState._current_corner;
+  },
+  setZoomType: (type) => {
+    zoomState._zoomStyle = type;
+  },
+  getZoomType: () => {
+    return zoomState._zoomStyle;
+  },
 });
 
 const apiRender = (zoomState) => ({
@@ -114,7 +128,7 @@ const apiRender = (zoomState) => ({
     // All elements that register for events "focus.<something>" will be called when the horizon
     // call context.focus()
     _context.on('focus.zoom-' + id, (i) => {
-      if (zoomState._corner1 !== null) {
+      if (zoomState._corner1 !== null && zoomState._current_corner !== null) {
         var x = Math.min(zoomState._corner1[0], zoomState._current_corner[0]);
         var y = Math.min(zoomState._corner1[1], zoomState._current_corner[1]);
         var width = Math.abs(
@@ -151,7 +165,17 @@ const apiEnabled = (zoomState) => ({
 });
 
 const apiUpdateCurrentCorner = (zoomState) => ({
-  updateCurrentCorner: (pos) => {
+  updateCurrentCorner: (pos, selection) => {
+    var corner = zoomState.getFirstCorner();
+    if (corner !== null) {
+      if (zoomState._zoomStyle === 'onelane') {
+        pos[1] = corner[1] + zoomState._selection.node().clientHeight;
+      } else if (zoomState._zoomStyle === 'full') {
+        pos[1] =
+          zoomState._selection.node().parentNode.offsetTop +
+          zoomState._selection.node().parentNode.clientHeight;
+      }
+    }
     // can't use { _current_corner } as it's the value not the address / object
     zoomState._current_corner = [Math.round(pos[0]), Math.round(pos[1])];
   },
@@ -177,6 +201,8 @@ const apiZoom = (context) => ({
       _enabled: enabled,
       _callback: callback,
       _current_corner: null,
+      _selection: null, // the d3 selection that corresponds to the canva that was clicked
+      _zoomStyle: 'default',
       _corner1: null, // the first corner of selection when you press the mouse
       _corner2: null, // the second corner of selection when you release the mouse
     };

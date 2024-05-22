@@ -22,11 +22,8 @@ const apiRender = (context, state) => ({
       .on('mousemove.horizon', function (event) {
         context.focus(Math.round(d3.pointer(event)[0]));
         if (context.zoom().enabled()) {
-          context
-            .zoom()
-            .updateCurrentCorner(
-              d3.pointer(event, selection.node().parentNode)
-            );
+          var position = d3.pointer(event, selection.node().parentNode);
+          context.zoom().updateCurrentCorner(position, selection);
         }
       })
       .on('mouseout.horizon', () => {
@@ -43,13 +40,15 @@ const apiRender = (context, state) => ({
     selection
       .on('mousedown', (event) => {
         if (context.zoom().enabled()) {
-          console.log('zoom called');
-          zoom.start(selection, d3.pointer(event, selection.node().parentNode));
+          var current_node = event.target;
+          var position = d3.pointer(event, selection.node().parentNode);
+          zoom.start(d3.select(current_node.parentNode), position);
         }
       })
       .on('mouseup', (event) => {
         if (context.zoom().enabled()) {
-          zoom.stop(selection, d3.pointer(event, selection.node().parentNode));
+          var position = d3.pointer(event, selection.node().parentNode);
+          zoom.stop(position);
           context.focus(Math.round(d3.pointer(event)[0]));
         }
       });
