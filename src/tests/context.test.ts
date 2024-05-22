@@ -42,6 +42,46 @@ describe('apiCSS', () => {
 });
 
 describe('apiZoom', () => {
+  it('should work when mode is full', () => {
+    const createMockSelection = () => {
+      const parent = { offsetTop: 72, clientHeight: 7 };
+      const selection = {
+        node: jest.fn().mockReturnValue({
+          parentNode: parent,
+          clientHeight: 5,
+          offsetTop: 56,
+        }),
+      };
+      return selection;
+    };
+    let sel = createMockSelection();
+    let cubismContext = context();
+    cubismContext.zoom().setZoomType('full');
+    cubismContext.zoom().start(sel, [12, 5]);
+    expect(cubismContext._zoom.getFirstCorner()).toStrictEqual([12, 72]);
+    cubismContext.zoom().updateCurrentCorner([24, 10], sel);
+    expect(cubismContext._zoom.getCurrentCorner()).toStrictEqual([24, 79]);
+  });
+  it('should work when mode is onelane', () => {
+    const createMockSelection = () => {
+      const parent = { offsetTop: 72, clientHeight: 7 };
+      const selection = {
+        node: jest.fn().mockReturnValue({
+          parentNode: parent,
+          clientHeight: 5,
+          offsetTop: 56,
+        }),
+      };
+      return selection;
+    };
+    let sel = createMockSelection();
+    let cubismContext = context();
+    cubismContext.zoom().setZoomType('onelane');
+    cubismContext.zoom().start(sel, [12, 5]);
+    expect(cubismContext._zoom.getFirstCorner()).toStrictEqual([12, 56]);
+    cubismContext.zoom().updateCurrentCorner([24, 10], sel);
+    expect(cubismContext._zoom.getCurrentCorner()).toStrictEqual([24, 61]);
+  });
   it('should store the position correctly when start is called', () => {
     let cubismContext = context();
     cubismContext.zoom().start(null, [12, 5]);
@@ -64,7 +104,7 @@ describe('apiZoom', () => {
     cubismContext._start1 = 100;
     cubismContext.zoom().start(null, [12, 5]);
     expect(cubismContext._zoom.getFirstCorner()).toStrictEqual([12, 5]);
-    cubismContext.zoom().stop(null, [24, 7]);
+    cubismContext.zoom().stop([24, 7]);
     expect(cubismContext._zoom.getFirstCorner()).toBe(null);
     expect(cubismContext._zoom.getSecondCorner()).toStrictEqual([24, 7]);
   });
@@ -77,7 +117,7 @@ describe('apiZoom', () => {
     cubismContext._start1 = 1;
     cubismContext._start1 = 100;
     cubismContext.zoom().start(null, [24, 5]);
-    cubismContext.zoom().stop(null, [12, 7]);
+    cubismContext.zoom().stop([12, 7]);
     expect(cubismContext._zoom.getFirstCorner()).toBe(null);
   });
   it('should not call the callback in stop() if it is the same point', () => {
@@ -91,9 +131,22 @@ describe('apiZoom', () => {
     cubismContext._start1 = 1;
     cubismContext._start1 = 100;
     cubismContext.zoom().start(null, [24, 5]);
-    cubismContext.zoom().stop(null, [24, 7]);
+    cubismContext.zoom().stop([24, 7]);
     expect(cubismContext._zoom.getFirstCorner()).toBe(null);
     expect(called).toBe(false);
+  });
+  it('should work when calling getZoomType', () => {
+    let cubismContext = context();
+    let called = false;
+    cubismContext.zoom((start: number, end: number) => {});
+    expect(cubismContext.zoom().getZoomType()).toBe('default');
+  });
+  it('should work when calling setZoomType', () => {
+    let cubismContext = context();
+    let called = false;
+    cubismContext.zoom((start: number, end: number) => {});
+    cubismContext.zoom().setZoomType('full');
+    expect(cubismContext.zoom().getZoomType()).toBe('full');
   });
 });
 

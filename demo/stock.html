@@ -6,7 +6,11 @@
         font-family: "Helvetica Neue", Helvetica, sans-serif;
         margin: 30px auto;
         width: 1280px;
+    }
+
+    #demo {
         position: relative;
+        overflow: hidden;
     }
 
     header {
@@ -43,7 +47,6 @@
         background-image: -moz-linear-gradient(top, #fff 0%, rgba(255,255,255,0) 100%);
         background-image: -webkit-linear-gradient(top, #fff 0%, rgba(255,255,255,0) 100%);
         background-image: -ms-linear-gradient(top, #fff 0%, rgba(255,255,255,0) 100%);
-        top: 0px;
         padding: 0 0 24px 0;
     }
 
@@ -53,7 +56,6 @@
         background-image: -moz-linear-gradient(bottom, #fff 0%, rgba(255,255,255,0) 100%);
         background-image: -webkit-linear-gradient(bottom, #fff 0%, rgba(255,255,255,0) 100%);
         background-image: -ms-linear-gradient(bottom, #fff 0%, rgba(255,255,255,0) 100%);
-        bottom: 0px;
         padding: 24px 0 0 0;
     }
 
@@ -95,15 +97,21 @@
     }
 
     .line {
+        position: relative;
         background: #000;
         z-index: 2;
+    }
+
+    .rule {
     }
 
 </style>
 <script src="lib/d3.v7.min.js" charset="utf-8"></script>
 <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.35.3/es6-shim.js"></script>-->
 <script src="./cubism-es.standalone.js"></script>
-<body id="demo">
+<body>
+<H1> Stock Demo</H1>
+<div id="demo">
 <script>
 
     var delay = Date.now()  - new Date(2012, 4, 2)
@@ -114,30 +122,30 @@
         .size(size)
         .stop();
 
-    d3.select("#demo").selectAll(".axis")
-        .data(['top', "bottom"])
-        .enter().append("div")
-        .attr("class", function(d) { return d + " axis"; })
-        .each(function(d) { context.axis().ticks(12).orient(d).render(d3.select(this)) });
 
-    const d = d3.select("body").append("div")
-        .attr("class", "rule")
-        .attr('id', 'rule');
-    context.rule().render(d);
 
-    d3.select("body").selectAll(".horizon")
+    d3.select("#demo").selectAll(".horizon")
         .data(["AAPL", "BIDU", "SINA", "GOOG", "MSFT", "YHOO", "ADBE", "REDF", "INSP", "IACI", "AVID", "CCUR", "DELL", "DGII", "HPQ", "SGI", "SMCI", "SNDK", "SYNA"].map(stock))
         .enter().insert("div", ".bottom")
         .attr("class", "horizon");
 
 
     context.horizon().format(d3.format("+,.2p")).render(d3.selectAll('.horizon'))
-    const z = d3.select("body").append("div")
+    const z = d3.select("#demo").append("div")
         .attr("class", "zoom");
+    const d = d3.select("#demo").append("div")
+        .attr("class", "rule")
+        .attr('id', 'rule');
+    context.rule().render(d);
+    d3.select("#demo").selectAll(".axis")
+        .data(['top', "bottom"])
+        .enter().append("div")
+        .attr("class", function(d) { return d + " axis"; })
+        .each(function(d) { context.axis().ticks(12).orient(d).render(d3.select(this)) });
 
-    context.zoom(function(start, end) {
+    context.zoom(function(start, end, selection) {
         console.log(`Doing a zoom from point ${start} to point ${end}`);
-        context.zoom().zoomTime(start, end);
+        context.zoom().zoomTime(start, end, selection);
     }).render(z);
 
 
@@ -174,4 +182,6 @@
     }
 
 </script>
-
+</div>
+</body>
+</html>

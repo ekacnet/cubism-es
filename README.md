@@ -115,6 +115,8 @@ The core of the configuration is the function that you pass to `zoom()`, it take
 You can do pretty much anything you want in the zoom function like actually zooming or calling a different URL with a detailed analysis of the zoom time.
 There is a function in the `zoom` module that you can reuse for doing the actual zooming: `zoom().zoomTime()`, your source must be able to provide a fresh array of values to handle the zoom, see examples in the stock or random demo.
 
+Zoom also support a zoom style or zoom type, the default one is drawing a rectangle from the point where you click and to the point where you are moving your mouse, `onelane` will start at the top of the horizon that has been clicked and will go to the bottom of this horizon; `full` will start at the top of the whole `cubism` graph till the bottom of it.
+
 
 ## Limitation
 Graphite, Cube and GangliaWeb have not been verified yet.
