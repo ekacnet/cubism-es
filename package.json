@@ -32,10 +32,6 @@
     "all": true,
     "report-dir": "coverage/cypress"
   },
-  "exports": {
-    ".": "dist/cubism-es.js",
-    "./esm/cubism-es.esm.js": "dist/cubism-es.esm.js"
-  },
   "dependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
     "@testing-library/jest-dom": "^6.4.2",
