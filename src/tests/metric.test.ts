@@ -68,7 +68,7 @@ describe('metric', () => {
       }
     });
     // move the time to 1 step in the future and the first element is shifted
-    jest.advanceTimersByTime(1000);
+    jest.advanceTimersByTime(1001);
     h.each(function (d, i) {
       if (d.toString() === undefined) {
         expect(d._values[0]).toBe(-8);

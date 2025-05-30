@@ -1,8 +1,8 @@
-# cubism-es
+# cubism-ng
 [![codecov](https://codecov.io/gh/ekacnet/cubism-es/graph/badge.svg?token=P3QB0BZKKA)](https://codecov.io/gh/ekacnet/cubism-es)
 [![actions](https://github.com/ekacnet/cubism-es/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ekacnet/cubism-es/actions)
 
-cubism-es is an ES6 module of [cubism](https://github.com/square/cubism), based on d3v7.
+cubism-ng is an ES6 module of [cubism](https://github.com/square/cubism), based on d3v7.
 
 > **IMPORTANT** Version 1.1.0 contains api breaks. Please see below for details
 
@@ -12,28 +12,28 @@ cubism-es is an ES6 module of [cubism](https://github.com/square/cubism), based 
 1. ES6 Usage
 
 ```
-npm install cubism-es --save
-import { context } from 'cubism-es';
+npm install cubism-ng --save
+import { context } from 'cubism-ng';
 ```
-Please note adding `cubism-es` will automatically add `d3` as a dependency into your project.
+Please note adding `cubism-ng` will automatically add `d3` as a dependency into your project.
 From version `1.1.2`, there's no need to declare d3 as globals in your project with the `webpack ProvidePlugin`
 
 2. Standalone Usage
 
 ```
 <script src="lib/d3.v7.min.js" charset="utf-8" type="application/javascript"></script>
-<script src="lib/cubism-es.standalone.js" charset="utf-8" type="application/javascript"></script>
+<script src="lib/cubism-ng.standalone.js" charset="utf-8" type="application/javascript"></script>
 ```
 
 ## API Breaks (v1.1.0)
-function | cubism | cubism-es
+function | cubism | cubism-ng
 --- | --- | ---
 **Context.axis** | `d3.select(...).call(context.axis)` | `context.axis().render(d3.select(...))`
 **Context.rule** | `d3.select(...).call(context.rule)` | `context.rule().render(d3.select(...))`
 **Context.horizon** | `d3.select(...).call(context.horizon)` | `context.horizon().render(d3.select(...))`
 
 ## API Breaks (v1.0.0 and previous)
-function | cubism | cubism-es
+function | cubism | cubism-ng
 --- | --- | ---
 **Context** | `d3.select(...).call(cubism.context)` | `const context = cubism.context(d3.select(...)).height(30)`
 **Context.axis** | `d3.select(...).call(context.axis)` | `context.axis(d3.select(...))`
@@ -92,7 +92,7 @@ It seems that everybody (almost) is using vscode those days, I'm not (I'm using 
 
 In git repositories, main or master are usually considered root branch but you usually have just one of them (either `main` or `master`) not both.
 
-So why 2 here ?, as of Mayu 2024 I (Matthieu) still have hope to get in touch with the original maintainer of `cubism-es` and that's why I maintain a stack of diff against his root branch: `master` but that starts to be annoying when you want to use a more up to date and maintained version, that's why I created the `main` branch with what I think is a stable version of the code.
+So why 2 here ?, as of Mayu 2024 I (Matthieu) still have hope to get in touch with the original maintainer of `cubism-ng` and that's why I maintain a stack of diff against his root branch: `master` but that starts to be annoying when you want to use a more up to date and maintained version, that's why I created the `main` branch with what I think is a stable version of the code.
 
 ## Documentation
 For more information, please visit square/cubism's [home page](http://square.github.io/cubism/) and [wiki](https://github.com/square/cubism/wiki), this version should support the same API.
