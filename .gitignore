@@ -2,7 +2,7 @@ node_modules
 coverage
 dist
 .nyc_output
-demo/cubism-es.standalone.js
-demo/cubism-es.standalone.js.map
+demo/cubism-ng.standalone.js
+demo/cubism-ng.standalone.js.map
 cypress/screenshots
 .vscode/launch.json

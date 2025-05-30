@@ -57,7 +57,7 @@ export default {
       },
     },
     {
-      file: 'dist/cubism-es.standalone.js',
+      file: 'dist/cubism-ng.standalone.js',
       format: 'umd',
       name: 'cubism',
       globals: {

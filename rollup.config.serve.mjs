@@ -37,7 +37,7 @@ export default {
   external: ['d3'],
   output: [
     {
-      file: 'demo/cubism-es.standalone.js',
+      file: 'demo/cubism-ng.standalone.js',
       format: 'umd',
       name: 'cubism',
       globals: {
