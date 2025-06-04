@@ -86,6 +86,8 @@ const apiRender = (context, state) => ({
         // compute the new extent and ready flag
         let extent = metric_.extent();
         ready = extent.every(isFinite);
+        // If the horizon defines the extent one way or another (ie. function or set of values)
+        // use them instead of the one from the metric
         if (extent_ != null) extent = extent_;
 
         // if this is an update (with no extent change), copy old values!
@@ -116,7 +118,7 @@ const apiRender = (context, state) => ({
           start = start1;
         }
 
-        // update the domain
+        // update the domain, ie. the range of value in the input
         _scale.domain([0, (max_ = max)]);
 
         // clear for the new data
@@ -125,49 +127,65 @@ const apiRender = (context, state) => ({
         // record whether there are negative values to display
         let negative;
 
-        // positive bands
         // remember m is the number of colors / 2
-        // I guess divided by 2 because the first x colors are for the negative stuff
-        for (let j = 0; j < m; ++j) {
-          ctx.fillStyle = colors_[m + j];
-
-          // Adjust the range based on the current band index.
-          let y0 = (j - m + 1) * _height;
-          _scale.range([m * _height + y0, y0]);
-          y0 = _scale(0);
-          for (let i = i0, n = _width, y1; i < n; ++i) {
-            y1 = metric_.valueAt(i);
-            if (y1 <= 0) {
-              negative = true;
-              continue;
-            }
-            if (y1 === undefined) continue;
-            ctx.fillRect(i, (y1 = _scale(y1)), 1, y0 - y1);
-          }
-        }
-
-        if (negative) {
+        // so we want to map the number from 0 to max_ on height_ pixels
+        // time half the number of colors defined (m) so we pretend that we have a range
+        // of m * height
+        _scale.range([0, m * _height]);
+        for (let i = i0, y1; i < _width; ++i) {
           // enable offset mode
-          if (_mode === 'offset') {
-            ctx.translate(0, _height);
-            ctx.scale(1, -1);
-          }
+          // offset means that we draw from the top for negative value
+          // Where we start drawing the rectangle
+          let y = _height;
+          let sign = 1;
+          // draw from thet "bottom" going up
+          let drawSign = -1;
+          let colorOffset = 0;
+          y1 = metric_.valueAt(i);
 
-          // negative bands
-          for (let j = 0; j < m; ++j) {
-            ctx.fillStyle = colors_[m - 1 - j];
-
-            // Adjust the range based on the current band index.
-            let y0 = (j - m + 1) * _height;
-            _scale.range([m * _height + y0, y0]);
-            y0 = _scale(0);
-
-            for (let i = i0, n = _width, y1; i < n; ++i) {
-              y1 = metric_.valueAt(i);
-              if (y1 >= 0) continue;
-              ctx.fillRect(i, _scale(-y1), 1, y0 - _scale(-y1));
+          if (y1 <= 0) {
+            if (_mode === 'offset') {
+              y = 0;
+              drawSign = 1;
             }
+            sign = -1;
+            negative = true;
+            // This is kind of counter intuitive but negative colors goes from the darkest at the
+            // lower index to the lightest at the higher one before m, we want to start from the
+            // lighter one and go darker
+            colorOffset = m - 1;
+          } else {
+            negative = false;
+            // positive colors starts at offset m in colors_
+            colorOffset = m;
           }
+
+          let scaled_y1 = _scale(sign * y1);
+          if (scaled_y1 === undefined) continue;
+          let color_idx = Math.floor(scaled_y1 / _height);
+          let modulo = scaled_y1 % _height;
+          if (color_idx >= m) {
+            // y1 == max so scale_y1 == m * _height
+            // adjust the idx to pick the right color still
+            color_idx = m - 1;
+            modulo = _height;
+          }
+          // we know that that it's more than just one band because we are at least in
+          // the second set of color
+
+          //
+          if (color_idx > 0) {
+            ctx.fillStyle = colors_[colorOffset + sign * (color_idx - 1)];
+            ctx.fillRect(i, 0, 1, _height);
+          }
+          ctx.fillStyle = colors_[colorOffset + sign * color_idx];
+
+          // so fillRect fills from the top so if you were to do
+          // ctx.fillRect(i, 0, 1, modulo) it would draw as an icle, so
+          // instead we prented we do it from the "height" ie. 30px down and we draw -modulo
+          // At least that's for the positive value and when we are not in offset mode for negative
+          // ones
+          let rectHeight = ctx.fillRect(i, y, 1, drawSign * modulo);
         }
 
         ctx.restore();

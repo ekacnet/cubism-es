@@ -12,7 +12,7 @@ cubism-ng is an ES6 module of [cubism](https://github.com/square/cubism), based 
 1. ES6 Usage
 
 ```
-npm install cubism-ng --save
+npm install cubism-ng --save --force --ignore-scripts
 import { context } from 'cubism-ng';
 ```
 Please note adding `cubism-ng` will automatically add `d3` as a dependency into your project.
