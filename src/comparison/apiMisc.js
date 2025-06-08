@@ -6,7 +6,7 @@ const apiMisc = (state) => ({
   },
   primary: (_ = null) => {
     if (_ === null) return state._primary;
-    state._primary = primary;
+    state._primary = _;
     return state;
   },
   secondary: (_ = null) => {
@@ -41,7 +41,7 @@ const apiMisc = (state) => ({
   },
   colors: (_ = null) => {
     if (_ === null) return state._colors;
-    state._colorscolors = _;
+    state._colors = _;
     return state;
   },
   strokeWidth: (_ = null) => {
