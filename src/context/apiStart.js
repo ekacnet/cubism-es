@@ -41,10 +41,10 @@ const apiStart = (state) => ({
         _event.call('focus', state, _focus);
       }, _clientDelay);
 
-      state.timeout = setTimeout(prepare, _step);
+        state._timeout = setTimeout(prepare, _step);
     };
 
-    state.timeout = setTimeout(prepare, delay);
+    state._timeout = setTimeout(prepare, delay);
 
     return state;
   },
