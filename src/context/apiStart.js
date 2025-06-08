@@ -11,10 +11,7 @@ const apiStart = (state) => ({
       _size,
     } = state;
 
-    if (_timeout !== null && _timeout == -1) {
-      return state;
-    }
-    if (_timeout) clearTimeout(_timeout);
+    if (_timeout !== null && _timeout !== -1) clearTimeout(_timeout);
     let delay = +_stop1 + _serverDelay - Date.now();
 
     // If we're too late for the first prepare _event, skip it.
