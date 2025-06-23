@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+    body {
+        font-family: "Helvetica Neue", Helvetica, sans-serif;
+        margin: 30px auto;
+        width: 1280px;
+    }
+
+    #demo {
+        position: relative;
+        overflow: hidden;
+    }
+
+    header {
+        padding: 6px 0;
+    }
+
+    .group {
+        margin-bottom: 1em;
+    }
+
+    .axis {
+        font: 10px sans-serif;
+        position: fixed;
+        pointer-events: none;
+        z-index: 2;
+    }
+
+    .axis text {
+        -webkit-transition: fill-opacity 250ms linear;
+    }
+
+    .axis path {
+        display: none;
+    }
+
+    .axis line {
+        stroke: #000;
+        shape-rendering: crispEdges;
+    }
+
+    .axis.top {
+        background-image: linear-gradient(top, #fff 0%, rgba(255,255,255,0) 100%);
+        background-image: -o-linear-gradient(top, #fff 0%, rgba(255,255,255,0) 100%);
+        background-image: -moz-linear-gradient(top, #fff 0%, rgba(255,255,255,0) 100%);
+        background-image: -webkit-linear-gradient(top, #fff 0%, rgba(255,255,255,0) 100%);
+        background-image: -ms-linear-gradient(top, #fff 0%, rgba(255,255,255,0) 100%);
+        padding: 0 0 24px 0;
+    }
+
+    .axis.bottom {
+        background-image: linear-gradient(bottom, #fff 0%, rgba(255,255,255,0) 100%);
+        background-image: -o-linear-gradient(bottom, #fff 0%, rgba(255,255,255,0) 100%);
+        background-image: -moz-linear-gradient(bottom, #fff 0%, rgba(255,255,255,0) 100%);
+        background-image: -webkit-linear-gradient(bottom, #fff 0%, rgba(255,255,255,0) 100%);
+        background-image: -ms-linear-gradient(bottom, #fff 0%, rgba(255,255,255,0) 100%);
+        padding: 24px 0 0 0;
+    }
+
+    .horizon {
+        border-bottom: solid 1px #000;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .horizon {
+        border-top: solid 1px #000;
+        border-bottom: solid 1px #000;
+    }
+
+    .horizon + .horizon {
+        border-top: none;
+    }
+
+    .horizon canvas {
+        display: block;
+    }
+
+    .horizon .title,
+    .horizon .value {
+        bottom: 0;
+        line-height: 30px;
+        margin: 0 6px;
+        position: absolute;
+        text-shadow: 0 1px 0 rgba(255,255,255,.5);
+        white-space: nowrap;
+    }
+
+    .horizon .title {
+        left: 0;
+    }
+
+    .horizon .value {
+        right: 0;
+    }
+
+    .line {
+        position: relative;
+        background: #000;
+        z-index: 2;
+    }
+
+    .rule {
+    }
+
+</style>
+<script src="lib/d3.v7.min.js" charset="utf-8"></script>
+<script src="./cubism-ng.standalone.js"></script>
+<body>
+<H1> Prometheus Demo</H1>
+<div id="demo">
+<script>
+
+    var delay = Date.now()  - new Date(2025, 5, 7, 22, 41, 50)
+    var context = cubism.context()
+        .serverDelay(delay)
+        .step(2800) /* every 2.8 sec */
+        .size(1280)
+        .stop();
+    var prom_json;
+    var metricName = "cached";
+
+    async function loadData() {
+        try {
+            const data = await d3.json('data/prom.json');
+            prom_json = data;
+        }
+        catch(error)  {
+            console.error('Failed to load JSON:', error);
+        };
+    }
+    // because d3.json() is async
+    loadData().then(() => {
+
+        var metrics = get_metrics(prom_json, metricName);
+
+
+        d3.select("#demo").selectAll(".horizon")
+            .data(metrics.map(prom_metrics))
+            .enter().insert("div", ".bottom")
+            .attr("class", "horizon");
+
+
+        context.horizon().render(d3.selectAll('.horizon'))
+        const z = d3.select("#demo").append("div")
+            .attr("class", "zoom");
+        const d = d3.select("#demo").append("div")
+            .attr("class", "rule")
+            .attr('id', 'rule');
+        context.rule().render(d);
+        d3.select("#demo").selectAll(".axis")
+            .data(['top', "bottom"])
+            .enter().append("div")
+            .attr("class", function(d) { return d + " axis"; })
+            .each(function(d) { context.axis().ticks(12).orient(d).render(d3.select(this)) });
+
+        context.zoom(function(start, end, selection) {
+            console.log(`Doing a zoom from point ${start} to point ${end}`);
+            context.zoom().zoomTime(start, end, selection);
+        }).render(z);
+
+
+        context.on("focus", function(i) {
+            d3.selectAll(".value").style("right", i == null ? null : context.size() - i + "px");
+        });
+    });
+
+    function get_metrics(rawjson, t) {
+        return rawjson.data.result.filter(item => item.metric.type === t).map(item => item.metric.instance);
+    }
+
+    function prom_metrics(name) {
+        return context.metric(function(start, stop, step, callback) {
+            let data = prom_json.data.result.filter(item => item.metric.type === metricName &&
+                item.metric.instance === name).map(item => item.values);
+            // data will always be an array of 1
+            let rows = data[0];
+            var date = new Date(rows[0][0]*1000), value = 0, values = [];
+            rows.forEach(function(r) {
+                d = new Date(r[0]*1000)
+                if (d >= start  && d <= stop) {
+                    if (date < start) {
+                        console.log(`Forcing ${date} to ${start} end = ${stop} r[0] = ${r[0]} ${step/1000}`);
+                        date = start
+                    }
+                    while ((date = d3.timeMillisecond.offset(date, step )) < d) { values.push(value);}
+                    values.push(value = r[1]);
+                } else {
+                    date = r[0]
+                }
+                }
+            );
+            const desired_length = (stop -start)/step;
+            while (values.length < desired_length) values.push(value);
+            callback(null, values);
+        }, name);
+    }
+
+</script>
+</div>
+</body>
+</html>
