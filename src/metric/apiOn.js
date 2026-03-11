@@ -16,7 +16,7 @@ const metric_overlap = 6;
 
 const reset = (state) => () => {
   state._start = -Infinity;
-  state.value = [];
+  state._values = [];
 };
 
 // Prefetch new data into a temporary array.
@@ -37,16 +37,20 @@ const prepare = (state, request) => (start1, stop) => {
 };
 
 const apiOn = (state, request) => ({
-  on: (type, listener = null) => {
+  on: (type, listener) => {
     const { _event, _id, context, _start, _stop } = state;
 
-    if (listener === null) return _event.on(type);
+    // No second argument: getter — return the current handler for `type`.
+    if (listener === undefined) return _event.on(type);
 
-    // If there are no listeners, then stop listening to the context,
-    // and avoid unnecessary fetches.
-    if (listener == null) {
+    // Explicit null: unsubscribe. If this was the last listener, detach
+    // from the context so we stop fetching data for a metric nobody watches.
+    if (listener === null) {
       if (_event.on(type) != null && --state._listening === 0) {
-        context.on('prepare' + _id, null).on('beforechange' + _id, null);
+        context
+          .on('reset' + _id, null)
+          .on('prepare' + _id, null)
+          .on('beforechange' + _id, null);
       }
     } else {
       if (_event.on(type) == null && ++state._listening === 1) {

@@ -1,7 +1,3 @@
-const config = {
-  current_corner: null,
-};
-
 const apiStart = (zoomState) => ({
   start: (selection, pos) => {
     var x = Math.round(pos[0]);
@@ -19,6 +15,7 @@ const apiStart = (zoomState) => ({
 const apiReset = (zoomState) => ({
   reset: () => {
     zoomState._corner1 = null;
+    zoomState._selection = null;
   },
 });
 
@@ -46,18 +43,16 @@ const apiStop = (zoomState) => ({
 });
 
 const apiZoomTime = (zoomState) => ({
-  zoomTime: (start, stop, selection) => {
+  zoomTime: (start, stop) => {
     const { _context } = zoomState;
-    const { _step } = _context;
 
     if (_context._start_before_zoom === null) {
-      // save the original start and stop
-      _context._start_before_zoom = _context.start1;
-      _context._stop_before_zoom = _context.stop1;
+      // save the original start and stop so we can zoom back out
+      _context._start_before_zoom = _context._start1;
+      _context._stop_before_zoom = _context._stop1;
     }
     var new_start_time = _context._scale.invert(start);
     var new_end_time = _context._scale.invert(stop);
-    var span = selection.select('.' + context.getCSSClass('title'));
     // stop the timeout
     _context.stop();
     var width = (new_end_time - new_start_time) / _context._size;
@@ -78,8 +73,8 @@ const apiZoomTime = (zoomState) => ({
     _context._start0 = new_start_time;
     _context._stop0 = new_end_time;
 
+    // Delay `change` until `prepare` has had a chance to refetch.
     setTimeout(() => {
-      // delay calling change to deal with the prepare()
       _context._scale.domain([_context._start1, _context._stop1]);
       _context._event.call(
         'change',

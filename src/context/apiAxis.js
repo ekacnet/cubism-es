@@ -87,7 +87,7 @@ const apiRender = (context, state) => ({
 
 const apiTicks = (axisState) => ({
   ticks: (...args) => {
-    axisState._axis.ticks(args);
+    axisState._axis.ticks(...args);
     return axisState;
   },
 });

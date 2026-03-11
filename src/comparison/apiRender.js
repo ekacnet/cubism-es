@@ -40,17 +40,13 @@ const apiRender = (state) => ({
       .append('span')
       .attr(
         'class',
-        concat(
-          context.getCSSClass('value'),
-          ' ',
-          context.getCSSClass('primary')
-        )
+        context.getCSSClass('value') + ' ' + context.getCSSClass('primary')
       );
     selection
       .append('span')
       .attr(
         'class',
-        concat(context.getCSSClass('value'), ' ', context.getCSSClass('change'))
+        context.getCSSClass('value') + ' ' + context.getCSSClass('change')
       );
 
     selection.each(function (d, i) {
@@ -142,12 +138,10 @@ const apiRender = (state) => ({
           .text(isNaN(valueChange) ? null : _formatChange)
           .attr(
             'class',
-            concat(
-              context.getCSSClass('value'),
-              ' ',
-              context.getCSSClass('change'),
-              ' '
-            ) +
+            context.getCSSClass('value') +
+              ' ' +
+              context.getCSSClass('change') +
+              ' ' +
               (valueChange > 0
                 ? context.getCSSClass('positive')
                 : valueChange < 0

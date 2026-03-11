@@ -9,7 +9,6 @@ const apiStart = (state) => ({
       _event,
       _scale,
       _size,
-      _focus,
     } = state;
 
     if (_timeout !== null && _timeout == -1) {
@@ -32,19 +31,21 @@ const apiStart = (state) => ({
       state._start1 = new Date(state._stop1 - _size * _step);
       _event.call('prepare', state, state._start1, state._stop1);
 
-      setTimeout(() => {
-        state.start0 = state._start1;
-        state.stop0 = state._stop1;
-        _scale.domain([state.start0, state.stop0]);
+      state._innerTimeout = setTimeout(() => {
+        // Bail if stop() was called while we were waiting on _clientDelay.
+        if (state._timeout === -1) return;
+        state._start0 = state._start1;
+        state._stop0 = state._stop1;
+        _scale.domain([state._start0, state._stop0]);
         _event.call('beforechange', state, state._start1, state._stop1);
         _event.call('change', state, state._start1, state._stop1);
-        _event.call('focus', state, _focus);
+        _event.call('focus', state, state._focus);
       }, _clientDelay);
 
-      state.timeout = setTimeout(prepare, _step);
+      state._timeout = setTimeout(prepare, _step);
     };
 
-    state.timeout = setTimeout(prepare, delay);
+    state._timeout = setTimeout(prepare, delay);
 
     return state;
   },

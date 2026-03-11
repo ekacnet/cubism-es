@@ -29,7 +29,7 @@ const apiRender = (context, state) => ({
       .on('mouseout.horizon', () => {
         context.focus(null);
       })
-      .on('mouseout.zoom', () => {
+      .on('mouseout.zoom', (event) => {
         var v = d3.pointer(event)[0];
         if (v < 0 || v >= _width) {
           zoom.reset();
