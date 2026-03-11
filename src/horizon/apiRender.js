@@ -1,5 +1,4 @@
-import { select } from 'd3-selection';
-import * as d3 from 'd3';
+import { select, pointer } from 'd3-selection';
 
 const apiRender = (context, state) => ({
   render: (selection) => {
@@ -20,17 +19,17 @@ const apiRender = (context, state) => ({
     const zoom = context.zoom();
     selection
       .on('mousemove.horizon', function (event) {
-        context.focus(Math.round(d3.pointer(event)[0]));
-        if (context.zoom().enabled()) {
-          var position = d3.pointer(event, selection.node().parentNode);
-          context.zoom().updateCurrentCorner(position, selection);
+        context.focus(Math.round(pointer(event)[0]));
+        if (zoom.enabled()) {
+          var position = pointer(event, selection.node().parentNode);
+          zoom.updateCurrentCorner(position, selection);
         }
       })
       .on('mouseout.horizon', () => {
         context.focus(null);
       })
       .on('mouseout.zoom', (event) => {
-        var v = d3.pointer(event)[0];
+        var v = pointer(event)[0];
         if (v < 0 || v >= _width) {
           zoom.reset();
           context.focus(null);
@@ -39,17 +38,17 @@ const apiRender = (context, state) => ({
 
     selection
       .on('mousedown', (event) => {
-        if (context.zoom().enabled()) {
+        if (zoom.enabled()) {
           var current_node = event.target;
-          var position = d3.pointer(event, selection.node().parentNode);
-          zoom.start(d3.select(current_node.parentNode), position);
+          var position = pointer(event, selection.node().parentNode);
+          zoom.start(select(current_node.parentNode), position);
         }
       })
       .on('mouseup', (event) => {
-        if (context.zoom().enabled()) {
-          var position = d3.pointer(event, selection.node().parentNode);
+        if (zoom.enabled()) {
+          var position = pointer(event, selection.node().parentNode);
           zoom.stop(position);
-          context.focus(Math.round(d3.pointer(event)[0]));
+          context.focus(Math.round(pointer(event)[0]));
         }
       });
 
@@ -83,12 +82,18 @@ const apiRender = (context, state) => ({
       function change(start1, stop) {
         ctx.save();
 
-        // compute the new extent and ready flag
-        let extent = metric_.extent();
-        ready = extent.every(isFinite);
-        // If the horizon defines the extent one way or another (ie. function or set of values)
-        // use them instead of the one from the metric
-        if (extent_ != null) extent = extent_;
+        // Compute the new extent and ready flag. When the horizon has
+        // a fixed extent (extent_ != null) and we have already established
+        // readiness once, skip the full-scan of metric values — it can be
+        // 1000+ compares per tick × per horizon lane.
+        let extent;
+        if (extent_ != null && ready) {
+          extent = extent_;
+        } else {
+          extent = metric_.extent();
+          ready = extent.every(isFinite);
+          if (extent_ != null) extent = extent_;
+        }
 
         // if this is an update (with no extent change), copy old values!
         let i0 = 0,

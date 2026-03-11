@@ -1,5 +1,4 @@
-import { select } from 'd3-selection';
-import * as d3 from 'd3';
+import { select, pointer } from 'd3-selection';
 import uuid from '../uuid';
 
 const roundEven = (i) => i & 0xfffffe;
@@ -24,8 +23,7 @@ const apiRender = (state) => ({
 
     selection
       .on('mousemove.comparison', function (event) {
-        // todo, why directly d3.mouse doesn't work?
-        context.focus(Math.round(d3.pointer(event)[0]));
+        context.focus(Math.round(pointer(event)[0]));
       })
       .on('mouseout.comparison', () => context.focus(null));
 
