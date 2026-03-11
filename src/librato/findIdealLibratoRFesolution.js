@@ -14,7 +14,7 @@
 const findIdealLibratoRFesolution = (step) => {
   const avail_rsts = [1, 60, 900, 3600];
   const highest_res = avail_rsts[0],
-    lowest_res = avail_rsts[avail_rsts.length]; // high and lowest available resolution from librato
+    lowest_res = avail_rsts[avail_rsts.length - 1]; // high and lowest available resolution from librato
 
   /* If step is outside the highest or lowest librato resolution, pick them and we are done */
   if (step >= lowest_res) return lowest_res;

@@ -1,10 +1,14 @@
-const apiRemove = (ruleState, selection) => ({
+const apiRemove = (ruleState) => ({
   remove: () => {
-    const { _context } = ruleState;
+    const { _context, _selection } = ruleState;
+    if (!_selection) return;
 
-    selection
+    _selection
       .selectAll('.' + _context.getCSSClass('line'))
-      .each((d) => _context.on('focus.rule-' + d.id, null))
+      .each((d) => {
+        _context.on('change.rule-' + d.id, null);
+        _context.on('focus.rule-' + d.id, null);
+      })
       .remove();
   },
 });
@@ -21,6 +25,7 @@ const apiRender = (state) => ({
   render: (selection) => {
     const { _context, _metric } = state;
     const id = ++_context._id;
+    state._selection = selection;
 
     const line = selection
       .append('div')
