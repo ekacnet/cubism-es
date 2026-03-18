@@ -9,24 +9,23 @@ on:
   pull_request:
       types: [opened, synchronize, edited, ready_for_review]
 
+permissions: read-all
+
 jobs:
   build:
     name: Build Artifacts
     runs-on: ubuntu-latest
     steps:
-
-      - uses: actions/checkout@v4
-      - name: Set env
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
       - name: Setup Node.js environment
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build
         run: npm run build
@@ -55,7 +54,7 @@ jobs:
         run: npm run report:combined
 
       - name: upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238 # v4
         if: steps.check-for-e2e.outputs.has-e2e == 'true'
         with:
           fail_ci_if_error: false
@@ -65,7 +64,7 @@ jobs:
           verbose: true # optional (default = false)
 
       - name: Archive E2E output
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: steps.check-for-e2e.outputs.has-e2e == 'true' && steps.run-e2e-tests.outcome != 'success'
         with:
           name: cypress-videos
@@ -73,7 +72,7 @@ jobs:
           retention-days: 5
 
       - name: Store the artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: js-package
           path: dist/
