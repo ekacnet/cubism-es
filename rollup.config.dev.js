@@ -1,12 +1,11 @@
-import babel from 'rollup-plugin-babel';
-import babelrc from 'babelrc-rollup';
-import resolve from 'rollup-plugin-node-resolve';
-import commonjs from 'rollup-plugin-commonjs';
+import babel from '@rollup/plugin-babel';
+import resolve from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
 import postcss from 'rollup-plugin-postcss'
 import localResolve from 'rollup-plugin-local-resolve';
 import livereload from 'rollup-plugin-livereload';
 import serve from 'rollup-plugin-serve';
-import json from 'rollup-plugin-json';
+import json from '@rollup/plugin-json';
 
 export default {
     input: 'src/index.js',
@@ -17,11 +16,12 @@ export default {
         }),
         localResolve(),
         postcss({ extract: 'dist/cubism-es.css' }),
-        babel(babelrc()),
+        babel({
+            babelHelpers: 'bundled',
+            exclude: 'node_modules/**',
+        }),
         resolve({
-            module: true,
-            jsnext: true,
-            main: true,
+            browser: true,
             extensions: ['.js']
         }),
         commonjs(),

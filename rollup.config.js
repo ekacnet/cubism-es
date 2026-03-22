@@ -1,10 +1,11 @@
-import babel from 'rollup-plugin-babel';
-import babelrc from 'babelrc-rollup';
-import resolve from 'rollup-plugin-node-resolve';
-import commonjs from 'rollup-plugin-commonjs';
+import babel from '@rollup/plugin-babel';
+import resolve from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
+import { createRequire } from 'node:module';
 import localResolve from 'rollup-plugin-local-resolve';
-import json from 'rollup-plugin-json';
+import json from '@rollup/plugin-json';
 
+const require = createRequire(import.meta.url);
 let pkg = require('./package.json');
 let external = Object.keys(pkg.dependencies);
 
@@ -16,11 +17,11 @@ export default {
             preferConst: true,
         }),
         localResolve(),
-        babel(babelrc()),
+        babel({
+            babelHelpers: 'bundled',
+            exclude: 'node_modules/**',
+        }),
         resolve({
-            module: true,
-            jsnext: true,
-            main: true,
             browser: true,
             extensions: ['.js']
         }),
