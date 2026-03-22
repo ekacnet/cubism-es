@@ -1,2 +1,7 @@
 node_modules
 coverage
+.stacky
+dist
+demo/cubism-ng.standalone.js
+demo/cubism-ng.standalone.js.map
+

@@ -1,9 +1,19 @@
 import { select } from 'd3-selection';
-import * as d3 from 'd3';
 import uuid from '../uuid';
 
 const roundEven = i => i & 0xfffffe;
 const roundOdd = i => ((i + 1) & 0xfffffe) - 1;
+const eventX = (node, maybeEvent) => {
+  const evt =
+    maybeEvent && typeof maybeEvent.clientX === 'number'
+      ? maybeEvent
+      : typeof window !== 'undefined' && window.d3 && window.d3.event
+      ? window.d3.event
+      : null;
+
+  if (!evt || typeof evt.clientX !== 'number') return null;
+  return evt.clientX - node.getBoundingClientRect().left;
+};
 
 const apiRender = state => ({
   render: selection => {
@@ -23,9 +33,10 @@ const apiRender = state => ({
     } = state;
 
     selection
-      .on('mousemove.comparison', function() {
-        // todo, why directly d3.mouse doesn't work?
-        context.focus(Math.round(d3.mouse(this)[0]));
+      .on('mousemove.comparison', function(event) {
+        const x = eventX(this, event);
+        if (x == null) return;
+        context.focus(Math.round(x));
       })
       .on('mouseout.comparison', () => context.focus(null));
 

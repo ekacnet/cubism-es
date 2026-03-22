@@ -7,6 +7,8 @@ import livereload from 'rollup-plugin-livereload';
 import serve from 'rollup-plugin-serve';
 import json from '@rollup/plugin-json';
 
+const isWatch = !!process.env.ROLLUP_WATCH;
+
 export default {
     input: 'src/index.js',
     plugins: [
@@ -25,19 +27,21 @@ export default {
             extensions: ['.js']
         }),
         commonjs(),
-        serve({
-            open: true,
-            verbose: true,
-            contentBase: ['demo', 'dist'],
-            historyApiFallback: false,
-            host: 'localhost',
-            port: 3004
-        }),
-        livereload({
-            watch: 'demo',
-            verbose: false
-        })
-    ],
+        isWatch &&
+            serve({
+                open: true,
+                verbose: true,
+                contentBase: ['demo', 'dist'],
+                historyApiFallback: false,
+                host: 'localhost',
+                port: 3004
+            }),
+        isWatch &&
+            livereload({
+                watch: 'demo',
+                verbose: false
+            })
+    ].filter(Boolean),
     external: [],
     output: [
         {

@@ -1,5 +1,16 @@
 import { select } from 'd3-selection';
-import * as d3 from 'd3';
+
+const eventX = (node, maybeEvent) => {
+  const evt =
+    maybeEvent && typeof maybeEvent.clientX === 'number'
+      ? maybeEvent
+      : typeof window !== 'undefined' && window.d3 && window.d3.event
+      ? window.d3.event
+      : null;
+
+  if (!evt || typeof evt.clientX !== 'number') return null;
+  return evt.clientX - node.getBoundingClientRect().left;
+};
 
 const apiRender = (context, state) => ({
   render: selection => {
@@ -18,9 +29,10 @@ const apiRender = (context, state) => ({
     } = state;
 
     selection
-      .on('mousemove.horizon', function() {
-        // todo: why directly importing mouse doesn't work here?
-        context.focus(Math.round(d3.mouse(this)[0]));
+      .on('mousemove.horizon', function(event) {
+        const x = eventX(this, event);
+        if (x == null) return;
+        context.focus(Math.round(x));
       })
       .on('mouseout.horizon', () => context.focus(null));
 
