@@ -355,4 +355,20 @@ describe('Key press Test', function () {
       });
     // TODO check things better
   });
+
+  it('ArrowRight sets focus to size-1 when focus is null', function () {
+    cy.visit('http://localhost:3004/random1s.html');
+
+    // Ensure focus starts as null so the right-arrow null branch is exercised.
+    cy.get('div.horizon').first().trigger('mouseout', { force: true });
+
+    // On random1s.html context size is 1280, so null + ArrowRight => focus 1279.
+    cy.get('body').trigger('keydown', { keyCode: 39, force: true });
+
+    cy.get('#rule')
+      .find('div.line')
+      .first()
+      .invoke('attr', 'style')
+      .should('include', 'left: 1279px');
+  });
 });
