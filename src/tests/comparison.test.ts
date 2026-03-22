@@ -1,5 +1,6 @@
 import context from '../context';
 import * as d3 from 'd3';
+import apiMisc from '../comparison/apiMisc';
 
 describe('comparison component', () => {
   const createMetric = (values: number[]) => ({
@@ -22,6 +23,40 @@ describe('comparison component', () => {
     expect(cmp.height()).toBe(50);
     expect(cmp.strokeWidth()).toBe(3);
     expect(cmp.colors()).toBe(cols);
+  });
+
+  test('apiMisc primary getter and setter update state directly', () => {
+    const initialPrimary = (d) => d[0];
+    const state = { _primary: initialPrimary };
+    const api = apiMisc(state);
+    const nextPrimary = (d) => d[1];
+
+    expect(api.primary()).toBe(initialPrimary);
+    expect(api.primary(nextPrimary)).toBe(state);
+    expect(state._primary).toBe(nextPrimary);
+    expect(api.primary()).toBe(nextPrimary);
+  });
+
+  test('primary accessor setter/getter is applied during render', () => {
+    document.body.innerHTML = '<div id="wrap"></div>';
+    const ctx = context().size(5);
+    const cmp = ctx.comparison();
+    const m1 = createMetric([1, 2, 3, 4, 5]);
+    const m2 = createMetric([5, 4, 3, 2, 1]);
+    const m3 = createMetric([2, 2, 2, 2, 2]);
+    const primary = jest.fn((d) => d[2]);
+
+    cmp.primary(primary);
+    expect(cmp.primary()).toBe(primary);
+
+    const sel = d3.select('#wrap').append('div').datum([m1, m2, m3]);
+    cmp.render(sel);
+
+    expect(primary).toHaveBeenCalledTimes(1);
+    expect(primary).toHaveBeenCalledWith([m1, m2, m3], 0);
+    expect(m3.on).toHaveBeenCalled();
+    expect(m2.on).toHaveBeenCalled();
+    expect(m1.on).not.toHaveBeenCalled();
   });
 
   test('render and remove manipulate DOM', () => {
