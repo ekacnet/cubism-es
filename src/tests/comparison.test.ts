@@ -130,4 +130,48 @@ describe('comparison component', () => {
     expect(document.querySelectorAll('canvas').length).toBe(0);
     expect(document.querySelectorAll('span').length).toBe(0);
   });
+
+  test('remove detaches comparison listeners from context and selection', () => {
+    document.body.innerHTML = '<div id="wrap"></div>';
+    const ctx = context().size(5);
+    const cmp = ctx.comparison();
+    const m1 = createMetric([1, 2, 3, 4, 5]);
+    const m2 = createMetric([5, 4, 3, 2, 1]);
+    const sel = d3.select('#wrap').append('div').datum([m1, m2]);
+
+    cmp.render(sel);
+
+    const listenerNames = (type: string) =>
+      ctx._event._[type]
+        .filter((l: any) => l.value != null)
+        .map((l: any) => l.name);
+
+    expect(
+      listenerNames('change').some((name: string) =>
+        name.startsWith('comparison-')
+      )
+    ).toBe(true);
+    expect(
+      listenerNames('focus').some((name: string) =>
+        name.startsWith('comparison-')
+      )
+    ).toBe(true);
+    expect(sel.on('mousemove.comparison')).toBeDefined();
+    expect(sel.on('mouseout.comparison')).toBeDefined();
+
+    cmp.remove(sel);
+
+    expect(
+      listenerNames('change').some((name: string) =>
+        name.startsWith('comparison-')
+      )
+    ).toBe(false);
+    expect(
+      listenerNames('focus').some((name: string) =>
+        name.startsWith('comparison-')
+      )
+    ).toBe(false);
+    expect(sel.on('mousemove.comparison')).toBeUndefined();
+    expect(sel.on('mouseout.comparison')).toBeUndefined();
+  });
 });

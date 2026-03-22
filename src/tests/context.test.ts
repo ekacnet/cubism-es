@@ -199,6 +199,24 @@ describe('apiAxis', () => {
     expect(axis.format(d)).toBe(d3.timeFormat('%I:%M %p')(d));
     cubismContext.stop();
   });
+  it('should remove axis DOM and detach namespaced listeners', () => {
+    document.body.innerHTML = '<div id="demo"></div>';
+    const cubismContext = context();
+    const axis = cubismContext.axis();
+    const sel = d3.select('#demo');
+    const axisId = axis.id;
+
+    axis.render(sel);
+    expect(sel.selectAll('svg').size()).toBe(1);
+    expect(cubismContext.on('change.axis-' + axisId)).toBeDefined();
+    expect(cubismContext.on('focus.axis-' + axisId)).toBeDefined();
+
+    axis.remove(sel);
+    expect(sel.selectAll('svg').size()).toBe(0);
+    expect(cubismContext.on('change.axis-' + axisId)).toBeUndefined();
+    expect(cubismContext.on('focus.axis-' + axisId)).toBeUndefined();
+    cubismContext.stop();
+  });
 });
 
 describe('apiClientDelay', () => {
