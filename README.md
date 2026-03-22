@@ -4,7 +4,7 @@
 
 cubism-ng is an ES6 module of [cubism](https://github.com/square/cubism), based on d3v7.
 
-> **IMPORTANT** Version 1.1.0 contains api breaks. Please see below for details
+> **IMPORTANT** Version 2.0.0 contains API breaks. Please see below for details.
 
 
 ## Usage:
@@ -24,6 +24,13 @@ From version `1.1.2`, there's no need to declare d3 as globals in your project w
 <script src="lib/d3.v7.min.js" charset="utf-8" type="application/javascript"></script>
 <script src="lib/cubism-ng.standalone.js" charset="utf-8" type="application/javascript"></script>
 ```
+
+## API Breaks (v2.0.0)
+function | status in cubism-ng 2.x | migration
+--- | --- | ---
+**Context.cube** | removed | use `context.metric(...)` with your own datasource adapter
+**Context.gangliaWeb** | removed | use `context.metric(...)` with your own datasource adapter
+**Context.librato** | removed | use `context.metric(...)` with your own datasource adapter
 
 ## API Breaks (v1.1.0)
 function | cubism | cubism-ng
@@ -119,7 +126,7 @@ Zoom also support a zoom style or zoom type, the default one is drawing a rectan
 
 
 ## Limitation
-Graphite, Cube and GangliaWeb have not been verified yet.
+Graphite has not been verified yet.
 
 ## Credits
 Contributors of the original [cubism](https://github.com/square/cubism), [Yun Xing](https://github.com/BigFatDog) for the ES6 port, [Matthieu](https://github.com/ekacnet) for the clean-up and the upgrade to d3v7.
@@ -127,6 +134,5 @@ Contributors of the original [cubism](https://github.com/square/cubism), [Yun Xi
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
-
 
 

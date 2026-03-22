@@ -15,13 +15,10 @@ import apiKeyboard from './apiKeyboard';
 import update from './update';
 
 import apiMetric from '../metric';
-import apiCube from './apiCube';
 import apiAxis from './apiAxis';
 import apiRule from './apiRule';
 import apiHorizon from '../horizon';
 
-import apiGangliaWeb from './apiGangliaWeb';
-import apiLibrato from '../librato';
 import apiGraphite from './apiGraphite';
 import apiComparison from '../comparison';
 
@@ -61,7 +58,6 @@ const context = () => {
     state,
     apiAxis(state),
     apiComparison(state),
-    apiCube(state),
     apiClientDelay(state),
     apiFocus(state),
     apiMetric(state),
@@ -84,8 +80,6 @@ const context = () => {
   return Object.assign(
     cubismContext,
     apiHorizon(cubismContext),
-    apiGangliaWeb(cubismContext),
-    apiLibrato(cubismContext),
     apiGraphite(cubismContext)
   );
 };

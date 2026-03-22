@@ -9,7 +9,6 @@
 // apiStart/apiStop/apiOn — they lock in the corrected contract.
 
 import context from '../context';
-import findIdealLibratoRFesolution from '../librato/findIdealLibratoRFesolution';
 import * as d3 from 'd3';
 
 // d3-dispatch keeps listeners in _event._.<type> as [{name, value}, ...].
@@ -363,21 +362,5 @@ describe('axis.ticks()', () => {
     const tickArgs = axis._axis.tickArguments();
     expect(tickArgs).toEqual([5]); // [5], not [[5]]
     ctx.stop();
-  });
-});
-
-describe('findIdealLibratoRFesolution', () => {
-  // Regression: avail_rsts[avail_rsts.length] → undefined
-  it('returns lowest resolution (3600) when step exceeds it', () => {
-    expect(findIdealLibratoRFesolution(5000)).toBe(3600);
-  });
-  it('returns highest resolution (1) when step is below it', () => {
-    expect(findIdealLibratoRFesolution(0.5)).toBe(1);
-  });
-  it('returns the nearest resolution for an in-range step', () => {
-    // step=30 is closer to 60 than to 1
-    expect(findIdealLibratoRFesolution(30)).toBe(1);
-    // step=500 is closer to 60 than to 900
-    expect(findIdealLibratoRFesolution(500)).toBe(900);
   });
 });
