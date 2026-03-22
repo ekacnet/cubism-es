@@ -8,3 +8,8 @@
 - Update packages
 - Change name
 - Rewrite how the rendering of horizon is done to be simplier to understand and faster
+
+## 1.4.1
+
+- Update packages
+- Performance updates by avoiding extent() scans and allowing cancelled timers to be properly cancelled
