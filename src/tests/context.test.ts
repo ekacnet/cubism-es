@@ -192,6 +192,13 @@ describe('apiAxis', () => {
     axis2 = axis2.orient('top');
     expect(axis2).not.toEqual(axis);
   });
+  it('should use minute formatter by default when step is in minute range', () => {
+    const cubismContext = context().step(6e4);
+    const axis = cubismContext.axis();
+    const d = new Date('2024-01-01T13:37:42Z');
+    expect(axis.format(d)).toBe(d3.timeFormat('%I:%M %p')(d));
+    cubismContext.stop();
+  });
 });
 
 describe('apiClientDelay', () => {
