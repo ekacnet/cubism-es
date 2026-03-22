@@ -372,3 +372,41 @@ describe('Key press Test', function () {
       .should('include', 'left: 1279px');
   });
 });
+
+describe('Comparison Demo Test', function () {
+  it('renders comparison rows and updates focus visuals on mouse move', function () {
+    cy.visit('http://localhost:3004/comparison.html');
+
+    cy.get('div.comparison').should('have.length', 2);
+    cy.get('div.comparison canvas').should('have.length', 2);
+    cy.get('div.comparison span.title').should('have.length', 2);
+    cy.get('div.comparison span.value.primary').should('have.length', 2);
+    cy.get('div.comparison span.value.change').should('have.length', 2);
+
+    cy.get('div.comparison')
+      .first()
+      .then(($div) => {
+        const valueBefore = $div.find('span.value.primary').first().text();
+        cy.wrap($div).trigger('mousemove', 120, 10);
+
+        cy.get('#rule')
+          .find('div.line')
+          .invoke('attr', 'style')
+          .then((style) => {
+            const match = /left:\s*(\d+)px/.exec(style);
+            expect(match).to.not.equal(null);
+            const left = Number(match[1]);
+            expect(left).to.be.within(115, 125);
+          });
+
+        cy.get('div.comparison')
+          .first()
+          .find('span.value.primary')
+          .invoke('text')
+          .then((valueAfter) => {
+            expect(valueAfter).not.to.equal('');
+            expect(valueAfter).not.to.equal(valueBefore);
+          });
+      });
+  });
+});
