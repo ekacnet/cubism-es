@@ -37,6 +37,63 @@ describe('comparison component', () => {
     expect(api.primary()).toBe(nextPrimary);
   });
 
+  test('apiMisc exposes getter/setter contract for remaining fields', () => {
+    const state = {
+      _height: 10,
+      _primary: (d) => d[0],
+      _secondary: (d) => d[1],
+      _extent: null,
+      _scale: { id: 'scale-1' },
+      _title: (d) => d,
+      _formatPrimary: (d) => String(d),
+      _formatChange: (d) => String(d),
+      _colors: ['#111', '#222'],
+      _strokeWidth: 1.5,
+    };
+    const api = apiMisc(state);
+
+    expect(api.height()).toBe(10);
+    expect(api.height('42')).toBe(state);
+    expect(state._height).toBe(42);
+
+    const secondary = (d) => d[2];
+    expect(api.secondary()).toBe(state._secondary);
+    expect(api.secondary(secondary)).toBe(state);
+    expect(api.secondary()).toBe(secondary);
+
+    const extent = [1, 9];
+    expect(api.extent()).toBeNull();
+    expect(api.extent(extent)).toBe(state);
+    expect(api.extent()).toBe(extent);
+
+    const scale = { id: 'scale-2' };
+    expect(api.scale()).toEqual({ id: 'scale-1' });
+    expect(api.scale(scale)).toBe(state);
+    expect(api.scale()).toBe(scale);
+
+    const title = (d) => 'title-' + d;
+    expect(api.title(state._title)).toBe(state);
+    expect(api.title()).toBe(state._title);
+    expect(api.title(title)).toBe(state);
+    expect(api.title()).toBe(title);
+
+    const formatPrimary = (d) => 'P' + d;
+    expect(api.formatPrimary(formatPrimary)).toBe(state);
+    expect(api.formatPrimary()).toBe(formatPrimary);
+
+    const formatChange = (d) => 'C' + d;
+    expect(api.formatChange(formatChange)).toBe(state);
+    expect(api.formatChange()).toBe(formatChange);
+
+    const colors = ['#aaa', '#bbb', '#ccc'];
+    expect(api.colors(colors)).toBe(state);
+    expect(api.colors()).toBe(colors);
+
+    expect(api.strokeWidth()).toBe(1.5);
+    expect(api.strokeWidth(3)).toBe(state);
+    expect(api.strokeWidth()).toBe(3);
+  });
+
   test('primary accessor setter/getter is applied during render', () => {
     document.body.innerHTML = '<div id="wrap"></div>';
     const ctx = context().size(5);
