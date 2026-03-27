@@ -492,6 +492,29 @@ describe('horizon drag → window mouseup', () => {
     expect(callback).not.toHaveBeenCalled();
     ctx.stop();
   });
+  it('bails out if container is detached mid-drag (re-render race)', () => {
+    // Regression: a mid-drag re-render detaches the container. The window
+    // listener survives, but pointer() against a detached node returns
+    // viewport coords that mix with the container-relative _corner1,
+    // producing garbage. The fix: bail on !container.isConnected, and
+    // clear _corner1 on re-registration so stop() is a no-op anyway.
+    const { ctx, callback, laneNode } = setup();
+
+    laneNode.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, clientX: 10, clientY: 5 }));
+    expect(ctx._zoom._corner1).not.toBeNull();
+
+    // Simulate re-render: detach the container AND re-register zoom.
+    document.body.innerHTML = '';
+    ctx.zoom(callback);
+
+    // Re-registration cleared the stale drag state.
+    expect(ctx._zoom._corner1).toBeNull();
+
+    // Late mouseup should not invoke the callback with garbage coords.
+    window.dispatchEvent(new MouseEvent('mouseup', { clientX: 500, clientY: 5 }));
+    expect(callback).not.toHaveBeenCalled();
+    ctx.stop();
+  });
 });
 
 describe('zoom.stop() — try/finally', () => {
