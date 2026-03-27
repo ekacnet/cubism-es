@@ -36,21 +36,26 @@ const apiRender = (context, state) => ({
         }
       });
 
-    selection
-      .on('mousedown', (event) => {
-        if (zoom.enabled()) {
-          var current_node = event.target;
-          var position = pointer(event, selection.node().parentNode);
-          zoom.start(select(current_node.parentNode), position);
-        }
-      })
-      .on('mouseup', (event) => {
-        if (zoom.enabled()) {
-          var position = pointer(event, selection.node().parentNode);
-          zoom.stop(position);
-          context.focus(Math.round(pointer(event)[0]));
-        }
-      });
+    const container = selection.node().parentNode;
+    selection.on('mousedown', (event) => {
+      if (!zoom.enabled()) return;
+      const current_node = event.target;
+      zoom.start(select(current_node.parentNode), pointer(event, container));
+
+      // Attach mouseup to window so the drag ends no matter where the
+      // pointer is released — over the zoom overlay, the axis, a gap
+      // between lanes, or outside the panel entirely. Attaching only
+      // to the horizon divs (as before) misses all those cases, and
+      // a data-driven re-render mid-drag destroys the divs that held
+      // the handler.
+      const onMouseUp = (upEvent) => {
+        const pos = pointer(upEvent, container);
+        zoom.stop(pos);
+        context.focus(Math.round(pos[0]));
+        window.removeEventListener('mouseup', onMouseUp, true);
+      };
+      window.addEventListener('mouseup', onMouseUp, true);
+    });
 
     selection.append('canvas').attr('width', _width).attr('height', _height);
 
