@@ -295,6 +295,48 @@ describe('metric.extent()', () => {
   });
 });
 
+describe('horizon render with all-zero data', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+    document.body.innerHTML = '<div id="demo"></div>';
+  });
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it('does not paint a band when every value is zero', () => {
+    // Regression: extent [0,0] → scale domain [0,0] → d3 returns the
+    // range midpoint for every input → full-height fill at mid-intensity
+    // blue. The fix early-returns after clearRect when max === 0.
+    const fillRect = jest.spyOn(CanvasRenderingContext2D.prototype, 'fillRect');
+
+    const ctx = context().step(1e3).size(5).serverDelay(0).clientDelay(0);
+    const m = ctx.metric((_s: number, _e: number, _st: number, cb: any) => {
+      cb(null, [0, 0, 0, 0, 0]);
+    }, 'all-zero');
+
+    const h = d3
+      .select('#demo')
+      .selectAll('.horizon')
+      .data([m])
+      .enter()
+      .insert('div', '.bottom')
+      .attr('class', 'horizon');
+    ctx.horizon().render(h);
+    ctx.start();
+    jest.advanceTimersByTime(50);
+
+    // Canvas was cleared but nothing drawn on top.
+    const nonTrivialFills = fillRect.mock.calls.filter(
+      ([, , w, h]) => w !== 0 && h !== 0
+    );
+    expect(nonTrivialFills).toHaveLength(0);
+
+    fillRect.mockRestore();
+    ctx.stop();
+  });
+});
+
 describe('rule.remove()', () => {
   beforeEach(() => {
     jest.useFakeTimers();
