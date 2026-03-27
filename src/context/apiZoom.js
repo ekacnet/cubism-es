@@ -27,18 +27,20 @@ const apiStop = (zoomState) => ({
     // call the callback that was specified with the start and end point
     // also context.scale has the time range we can get the timestamp by doing
     // context.scale.invert(x)
-    if (zoomState._corner1 != null) {
-      var start = Math.min(zoomState._corner1[0], zoomState._corner2[0]);
-      var end = Math.max(zoomState._corner1[0], zoomState._corner2[0]);
-      if (start !== end) {
-        zoomState._callback(start, end, zoomState._selection);
-      } else {
-        console.log('Skipping zoom on 1 point');
+    try {
+      if (zoomState._corner1 != null) {
+        var start = Math.min(zoomState._corner1[0], zoomState._corner2[0]);
+        var end = Math.max(zoomState._corner1[0], zoomState._corner2[0]);
+        if (start !== end) {
+          zoomState._callback(start, end, zoomState._selection);
+        }
       }
+    } finally {
+      // Always clear drag state, even if the callback threw — otherwise
+      // the selection rectangle follows the mouse forever.
+      zoomState._corner1 = null;
+      zoomState._selection = null;
     }
-    // force the zoom indicator to hide
-    zoomState._corner1 = null;
-    zoomState._selection = null;
   },
 });
 
@@ -116,7 +118,12 @@ const apiRender = (zoomState) => ({
       .attr('class', _context.getCSSClass('zoom'))
       .style('position', 'absolute')
       .style('top', 0)
-      .style('bottom', 0);
+      .style('bottom', 0)
+      // The overlay sits on top of the horizon lanes. Without this, it
+      // intercepts mouseup — the event bubbles to zoomDiv (a sibling of
+      // the horizons) instead of the horizon that registered the handler,
+      // so zoom.stop() never fires and the drag never ends.
+      .style('pointer-events', 'none');
 
     const rectangle = frame.append('rect').attr('fill-opacity', '50%'); // 50% transparent
 
@@ -156,6 +163,12 @@ const apiEnabled = (zoomState) => ({
   enabled: () => {
     const { _enabled } = zoomState;
     return _enabled;
+  },
+  disable: () => {
+    zoomState._enabled = false;
+    zoomState._callback = null;
+    zoomState._corner1 = null;
+    zoomState._selection = null;
   },
 });
 

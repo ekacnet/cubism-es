@@ -406,3 +406,111 @@ describe('axis.ticks()', () => {
     ctx.stop();
   });
 });
+
+describe('zoom.disable()', () => {
+  it('clears enabled, callback, and drag state', () => {
+    const ctx = context();
+    const callback = jest.fn();
+    const zoom = ctx.zoom(callback);
+
+    // simulate a drag in progress
+    zoom._corner1 = [10, 20];
+    zoom._selection = {} as any;
+
+    expect(zoom.enabled()).toBe(true);
+    zoom.disable();
+    expect(zoom.enabled()).toBe(false);
+    expect(zoom._callback).toBeNull();
+    expect(zoom._corner1).toBeNull();
+    expect(zoom._selection).toBeNull();
+    ctx.stop();
+  });
+  it('makes stop() a no-op — no stale callback invocation after disable', () => {
+    // Regression: panel switches zoomBehavior to 'off' mid-session, but the
+    // context is reused across renders. disable() must clear _corner1 so a
+    // late mouseup doesn't invoke the stale callback.
+    const ctx = context();
+    const callback = jest.fn();
+    const zoom = ctx.zoom(callback);
+
+    zoom._corner1 = [10, 20];
+    zoom._corner2 = [50, 60];
+    zoom._selection = {} as any;
+
+    zoom.disable();
+    zoom.stop([100, 100]);
+
+    expect(callback).not.toHaveBeenCalled();
+    ctx.stop();
+  });
+});
+
+describe('horizon drag → window mouseup', () => {
+  // Regression: mouseup was attached to the horizon divs. Releasing over
+  // the zoom overlay, axis, gap between lanes, or outside the panel never
+  // fired the handler — the selection rectangle followed the mouse forever.
+  // The fix attaches a one-shot mouseup to window on mousedown.
+  const setup = () => {
+    document.body.innerHTML = '<div id="container"></div>';
+    const ctx = context().step(1e4).size(10);
+    const callback = jest.fn();
+    ctx.zoom(callback);
+    const metric = ctx.metric((start, stop, step, cb) => cb(null, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), 's1');
+    const lane = d3
+      .select('#container')
+      .selectAll('.horizon')
+      .data([metric])
+      .enter()
+      .append('div')
+      .attr('class', 'horizon');
+    ctx.horizon().render(lane);
+    return { ctx, callback, laneNode: lane.node()! };
+  };
+
+  it('ends the drag when mouseup fires on window (not the horizon)', () => {
+    const { ctx, callback, laneNode } = setup();
+
+    laneNode.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, clientX: 10, clientY: 5 }));
+    expect(ctx._zoom._corner1).not.toBeNull();
+
+    // Release on window (NOT on the lane). Before the fix: no-op.
+    window.dispatchEvent(new MouseEvent('mouseup', { clientX: 50, clientY: 5 }));
+
+    expect(ctx._zoom._corner1).toBeNull();
+    expect(callback).toHaveBeenCalled();
+    ctx.stop();
+  });
+  it('removes the window listener after firing (one-shot)', () => {
+    const { ctx, callback, laneNode } = setup();
+
+    laneNode.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, clientX: 10, clientY: 5 }));
+    window.dispatchEvent(new MouseEvent('mouseup', { clientX: 50, clientY: 5 }));
+
+    callback.mockClear();
+    // Second mouseup with no preceding mousedown — listener already self-removed.
+    window.dispatchEvent(new MouseEvent('mouseup', { clientX: 80, clientY: 5 }));
+    expect(callback).not.toHaveBeenCalled();
+    ctx.stop();
+  });
+});
+
+describe('zoom.stop() — try/finally', () => {
+  it('clears drag state even when the callback throws', () => {
+    // Regression: a throwing callback (e.g., reading .length on undefined
+    // options.links) left _corner1 set, so the selection rectangle followed
+    // the mouse forever. The finally block guarantees state is cleared.
+    const ctx = context();
+    const zoom = ctx.zoom(() => {
+      throw new Error('callback blew up');
+    });
+
+    zoom._corner1 = [10, 20];
+    zoom._corner2 = [50, 60];
+    zoom._selection = {} as any;
+
+    expect(() => zoom.stop([100, 100])).toThrow('callback blew up');
+    expect(zoom._corner1).toBeNull();
+    expect(zoom._selection).toBeNull();
+    ctx.stop();
+  });
+});
