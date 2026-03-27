@@ -196,6 +196,11 @@ const apiZoom = (context) => ({
       if (callback !== null && callback !== undefined) {
         context._zoom._enabled = true;
         context._zoom._callback = callback;
+        // Clear any in-progress drag. Re-registration happens on re-render;
+        // the old _corner1 was relative to a now-detached container, so a
+        // late mouseup would mix coordinate systems and zoom to garbage.
+        context._zoom._corner1 = null;
+        context._zoom._selection = null;
         return context._zoom;
       }
       return _zoom;

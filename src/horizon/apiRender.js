@@ -49,10 +49,18 @@ const apiRender = (context, state) => ({
       // a data-driven re-render mid-drag destroys the divs that held
       // the handler.
       const onMouseUp = (upEvent) => {
+        window.removeEventListener('mouseup', onMouseUp, true);
+        // If a re-render detached our container mid-drag, pointer() would
+        // compute against a zero-rect and mix coordinate systems with the
+        // pre-render _corner1. Bail — the re-registration already cleared
+        // corner1 anyway, so stop() would be a no-op.
+        if (!container.isConnected) {
+          zoom.reset();
+          return;
+        }
         const pos = pointer(upEvent, container);
         zoom.stop(pos);
         context.focus(Math.round(pos[0]));
-        window.removeEventListener('mouseup', onMouseUp, true);
       };
       window.addEventListener('mouseup', onMouseUp, true);
     });
