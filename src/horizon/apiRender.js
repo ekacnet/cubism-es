@@ -129,6 +129,14 @@ const apiRender = (context, state) => ({
         // clear for the new data
         ctx.clearRect(i0, 0, _width - i0, _height);
 
+        // All-zero data: the [0, 0] domain makes d3's linear scale return
+        // the range midpoint for every input, which would paint the whole
+        // lane a mid-intensity band. Skip rendering; leave the canvas cleared.
+        if (max === 0) {
+          ctx.restore();
+          return;
+        }
+
         // record whether there are negative values to display
         let negative;
 
