@@ -159,6 +159,7 @@ const apiRender = (context, state) => ({
         // time half the number of colors defined (m) so we pretend that we have a range
         // of m * height
         _scale.range([0, m * _height]);
+        const logNorm = _valueScale === 'log' ? max_ / Math.log1p(max_) : 0;
         for (let i = i0, y1; i < _width; ++i) {
           // enable offset mode
           // offset means that we draw from the top for negative value
@@ -188,12 +189,10 @@ const apiRender = (context, state) => ({
           }
 
           const magnitude = sign * y1;
-          let scaledInput = magnitude;
-          if (_valueScale === 'log') {
-            // Map [0, max] to [0, max] logarithmically so band boundaries
-            // are denser near zero and wider at larger values.
-            scaledInput = (Math.log1p(magnitude) / Math.log1p(max_)) * max_;
-          }
+          // log mode maps [0, max] → [0, max] via log1p so band boundaries are
+          // denser near zero. log1p (not log) so magnitude=0 → 0, not -Infinity.
+          const scaledInput =
+            _valueScale === 'log' ? Math.log1p(magnitude) * logNorm : magnitude;
           let scaled_y1 = _scale(scaledInput);
           if (scaled_y1 === undefined) continue;
           let color_idx = Math.floor(scaled_y1 / _height);
