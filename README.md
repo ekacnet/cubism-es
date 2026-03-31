@@ -53,6 +53,7 @@ the following samples work, you can try them by downloading this project and run
 
 * Matthieu's adaptation for ES6 & d3v7 of Mike's [random demo](https://ekacnet.github.io/cubism-es/random.html)
 * Matthieu's adaptation for ES6 & d3v7 of Mike's [stock demo](https://ekacnet.github.io/cubism-es/stock.html)
+* Matthieu's [logscale demo](https://ekacnet.github.io/cubism-es/logscale.html)
 * Mike, Bostock's [stock demo](https://bost.ocks.org/mike/cubism/intro/demo-stocks.html)
 * Patrick, Thompson's [Discrete Cubism](http://bl.ocks.org/patrickthompson/4d508eb3b8feac90762e)
 * Square Inc's [demo](http://square.github.io/cubism/)
@@ -99,7 +100,7 @@ It seems that everybody (almost) is using vscode those days, I'm not (I'm using 
 
 In git repositories, main or master are usually considered root branch but you usually have just one of them (either `main` or `master`) not both.
 
-So why 2 here ?, as of Mayu 2024 I (Matthieu) still have hope to get in touch with the original maintainer of `cubism-ng` and that's why I maintain a stack of diff against his root branch: `master` but that starts to be annoying when you want to use a more up to date and maintained version, that's why I created the `main` branch with what I think is a stable version of the code.
+So why 2 here ?, as of May 2024 I (Matthieu) still have hope to get in touch with the original maintainer of `cubism-ng` and that's why I maintain a stack of diff against his root branch: `master` but that starts to be annoying when you want to use a more up to date and maintained version, that's why I created the `main` branch with what I think is a stable version of the code.
 
 ## Documentation
 For more information, please visit square/cubism's [home page](http://square.github.io/cubism/) and [wiki](https://github.com/square/cubism/wiki), this version should support the same API.
@@ -124,6 +125,9 @@ There is a function in the `zoom` module that you can reuse for doing the actual
 
 Zoom also support a zoom style or zoom type, the default one is drawing a rectangle from the point where you click and to the point where you are moving your mouse, `onelane` will start at the top of the horizon that has been clicked and will go to the bottom of this horizon; `full` will start at the top of the whole `cubism` graph till the bottom of it.
 
+For horizon rendering, `valueScale("log")` enables logarithmic band mapping instead of the default linear mapping (useful when values span several orders of magnitude), that was added in 2.0.1
+
+
 
 ## Limitation
 Graphite has not been verified yet.
@@ -134,5 +138,4 @@ Contributors of the original [cubism](https://github.com/square/cubism), [Yun Xi
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
-
 

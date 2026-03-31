@@ -40,6 +40,13 @@ describe('horizon', () => {
     hz.mode('foobar');
     expect(hz.mode()).toBe('foobar');
   });
+  it('works when calling valueScale()', () => {
+    expect(hz.valueScale()).toBe('linear');
+  });
+  it('works when calling valueScale() with arg', () => {
+    hz.valueScale('log');
+    expect(hz.valueScale()).toBe('log');
+  });
   it('works when calling scale()', () => {
     let f = hz.scale();
     let ref = scaleLinear().interpolate(interpolateRound);
@@ -129,5 +136,30 @@ describe('horizon', () => {
     expect(document.body.innerHTML).toBe(
       '<div id="demo"><div class="horizon"><canvas width="10" height="30"></canvas><span class="title">serie 2</span><span class="value">10</span></div><div class="horizon"><canvas width="10" height="30"></canvas><span class="title">serie 3</span><span class="value"></span></div></div>'
     );
+  });
+  it('renders with logarithmic valueScale', () => {
+    jest.useFakeTimers();
+    document.body.innerHTML = '<div id="demo"></div>';
+    const thisContext = context()
+      .step(1e3)
+      .size(10)
+      .serverDelay(0)
+      .clientDelay(0);
+    const getData = (i) =>
+      thisContext.metric(function (start, stop, step, callback) {
+        callback(null, [0.1, 0.5, 1, 2, 4, 8, 16, 32, 64, 128]);
+      }, 'serie ' + (i + 1));
+
+    h = d3
+      .select('#demo')
+      .selectAll('.horizon')
+      .data(d3.range(1, 3).map(getData))
+      .enter()
+      .insert('div', '.bottom')
+      .attr('class', 'horizon');
+    hz = thisContext.horizon();
+    hz.valueScale('log').render(h);
+
+    expect(document.querySelectorAll('#demo canvas').length).toBe(2);
   });
 });

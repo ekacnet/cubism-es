@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+  body {
+    font-family: "Helvetica Neue", Helvetica, sans-serif;
+    margin: 30px auto;
+    width: 1280px;
+    position: relative;
+  }
+
+  h2 {
+    margin: 24px 0 8px 0;
+    font-weight: 600;
+  }
+
+  .note {
+    color: #555;
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+
+  .axis {
+    font: 10px sans-serif;
+    position: fixed;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .axis path {
+    display: none;
+  }
+
+  .axis line {
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+
+  .axis.top {
+    top: 0px;
+    padding: 0 0 24px 0;
+  }
+
+  .horizon {
+    border-top: solid 1px #000;
+    border-bottom: solid 1px #000;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .horizon + .horizon {
+    border-top: none;
+  }
+
+  .horizon canvas {
+    display: block;
+  }
+
+  .horizon .title,
+  .horizon .value {
+    bottom: 0;
+    line-height: 30px;
+    margin: 0 6px;
+    position: absolute;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+    white-space: nowrap;
+  }
+
+  .horizon .title {
+    left: 0;
+  }
+
+  .horizon .value {
+    right: 0;
+  }
+</style>
+<script src="lib/d3.v7.min.js" charset="utf-8"></script>
+<script src="./cubism-ng.standalone.js"></script>
+<body id="demo">
+<script>
+  const context = cubism.context().step(1e3).size(1280).serverDelay(0).clientDelay(0);
+
+  d3.select("#demo")
+    .selectAll(".axis")
+    .data(["top"])
+    .enter()
+    .append("div")
+    .attr("class", (d) => d + " axis")
+    .each(function (d) {
+      context.axis().ticks(12).orient(d).render(d3.select(this));
+    });
+
+  d3.select("#demo")
+    .append("div")
+    .attr("class", "note")
+    .text("Same metrics in both sections. Top uses linear band mapping, bottom uses logarithmic band mapping.");
+
+  const metrics = d3.range(1, 10).map(spikyRandom);
+
+  d3.select("#demo").append("h2").text("Linear (valueScale: linear)");
+  const linear = d3.select("#demo")
+    .append("div")
+    .attr("id", "linear")
+    .selectAll(".horizon")
+    .data(metrics)
+    .enter()
+    .append("div")
+    .attr("class", "horizon");
+
+  context.horizon()
+    .height(28)
+    .extent([-1e6, 1e6])
+    .colors(["#08519c","#3182bd","#6baed6","#bdd7e7","#bae4b3","#74c476","#31a354","#006d2c"])
+    .valueScale("linear")
+    .render(linear);
+
+  d3.select("#demo").append("h2").text("Logarithmic (valueScale: log)");
+  const log = d3.select("#demo")
+    .append("div")
+    .attr("id", "log")
+    .selectAll(".horizon")
+    .data(metrics)
+    .enter()
+    .append("div")
+    .attr("class", "horizon");
+
+  context.horizon()
+    .height(28)
+    .extent([-1e6, 1e6])
+    .colors(["#08519c","#3182bd","#6baed6","#bdd7e7","#bae4b3","#74c476","#31a354","#006d2c"])
+    .valueScale("log")
+    .render(log);
+
+  context.on("focus", function (i) {
+    d3.selectAll(".value").style("right", i == null ? null : context.size() - i + "px");
+  });
+
+  function spikyRandom(i) {
+    let amplitude = 1 + i;
+    let values = [];
+    let phase = i * 0.33;
+    let last;
+    const laneSign = i % 2 === 0 ? 1 : -1;
+
+    return context.metric(function (start, stop, step, callback) {
+      start = +start;
+      stop = +stop;
+      if (isNaN(last)) last = start;
+
+      while (last < stop) {
+        last += step;
+        const drift = Math.exp((Math.random() - 0.48) * 0.7);
+        amplitude = Math.max(1e-3, Math.min(1e6, amplitude * drift));
+        const wave = 1 + 0.25 * Math.sin((phase += 0.2));
+        values.push(laneSign * amplitude * wave);
+      }
+      callback(null, values = values.slice((start - stop) / step));
+    }, "series " + i);
+  }
+</script>
