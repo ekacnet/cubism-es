@@ -12,6 +12,7 @@ const apiRender = (context, state) => ({
       _scale,
       _buffer,
       _mode,
+      _valueScale,
       _format,
     } = state;
 
@@ -186,7 +187,14 @@ const apiRender = (context, state) => ({
             colorOffset = m;
           }
 
-          let scaled_y1 = _scale(sign * y1);
+          const magnitude = sign * y1;
+          let scaledInput = magnitude;
+          if (_valueScale === 'log') {
+            // Map [0, max] to [0, max] logarithmically so band boundaries
+            // are denser near zero and wider at larger values.
+            scaledInput = (Math.log1p(magnitude) / Math.log1p(max_)) * max_;
+          }
+          let scaled_y1 = _scale(scaledInput);
           if (scaled_y1 === undefined) continue;
           let color_idx = Math.floor(scaled_y1 / _height);
           let modulo = scaled_y1 % _height;

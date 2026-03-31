@@ -5,6 +5,12 @@ const apiMisc = (state) => ({
     return state;
   },
 
+  valueScale: (_ = null) => {
+    if (_ === null) return state._valueScale;
+    state._valueScale = _ + '';
+    return state;
+  },
+
   height: (_ = null) => {
     if (_ === null) return state._height;
     state._height = +_;

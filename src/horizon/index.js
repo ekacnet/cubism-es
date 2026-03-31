@@ -14,6 +14,7 @@ const apiHorizon = (context) => ({
 
     const state = {
       _mode: 'offset',
+      _valueScale: 'linear',
       _buffer: buffer,
       _width: buffer.width,
       _height: buffer.height,
