@@ -6,3 +6,4 @@ demo/cubism-ng.standalone.js
 demo/cubism-ng.standalone.js.map
 cypress/screenshots
 .vscode/launch.json
+.stacky
