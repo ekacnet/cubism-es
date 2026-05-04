@@ -6,6 +6,7 @@ on:
       - 'v*' # Run workflow on version tags, e.g. v1.0.0.
 
 permissions:
+  id-token: write  # Required for OIDC
   contents: write
 
 jobs:
@@ -58,3 +59,17 @@ jobs:
             generate_release_notes: true
             files: |
               ./cubism-ng
+
+  publish:
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm install
+      - run: npm run build
+      - run: npm publish
